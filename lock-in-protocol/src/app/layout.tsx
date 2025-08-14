@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner"
 import { AuthProvider } from "@/lib/auth/auth-context"
 import { NotificationProvider } from "@/hooks/use-notifications"
+import { ThemeProvider } from "@/components/theme/theme-provider"
+import { QueryProvider } from "@/lib/query-client"
 import "./globals.css";
 
 const inter = Inter({
@@ -62,12 +64,19 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <AuthProvider>
-          <NotificationProvider>
-            {children}
-          </NotificationProvider>
-          <Toaster richColors position="top-right" />
-        </AuthProvider>
+        <ThemeProvider
+          defaultTheme="system"
+          storageKey="lock-in-theme"
+        >
+          <QueryProvider>
+            <AuthProvider>
+              <NotificationProvider>
+                {children}
+              </NotificationProvider>
+              <Toaster richColors position="top-right" />
+            </AuthProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
