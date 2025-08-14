@@ -6,10 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
-import { Separator } from '@/components/ui/separator'
 import { Plus, Trash2, Play, Square, Clock, Save } from 'lucide-react'
 import { WorkoutType } from '@prisma/client'
 import { ExerciseSet, WorkoutExercise } from '@/types/workout'
@@ -75,7 +73,7 @@ export function WorkoutSession() {
 
   const startWorkout = (workoutType: WorkoutType) => {
     setSelectedWorkout(workoutType)
-    const template = WORKOUT_TEMPLATES[workoutType]
+    const template = WORKOUT_TEMPLATES[workoutType as keyof typeof WORKOUT_TEMPLATES]
     const initialExercises = template.map((exercise, index) => ({
       id: `exercise-${index}`,
       sessionId: 'current-session',
@@ -95,7 +93,7 @@ export function WorkoutSession() {
     toast.success(`Started ${workoutType.replace('_', ' ')} session!`)
   }
 
-  const updateSet = (exerciseIndex: number, setIndex: number, field: keyof ExerciseSet, value: any) => {
+  const updateSet = (exerciseIndex: number, setIndex: number, field: keyof ExerciseSet, value: string | number | boolean) => {
     setExercises(prev => prev.map((exercise, eIndex) => {
       if (eIndex === exerciseIndex) {
         const updatedSets = exercise.sets.map((set, sIndex) => {

@@ -13,13 +13,17 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const { user, loading } = useAuth()
   const router = useRouter()
 
+  // For development, bypass auth if using demo Supabase setup
+  const isDevelopment = process.env.NODE_ENV === 'development' && 
+                       process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo')
+
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isDevelopment && !loading && !user) {
       router.push('/login')
     }
-  }, [user, loading, router])
+  }, [user, loading, router, isDevelopment])
 
-  if (loading) {
+  if (!isDevelopment && loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-64">
@@ -31,7 +35,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
     )
   }
 
-  if (!user) {
+  if (!isDevelopment && !user) {
     return null
   }
 

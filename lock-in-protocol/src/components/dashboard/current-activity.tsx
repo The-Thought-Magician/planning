@@ -28,10 +28,16 @@ const mockNextActivity = {
 }
 
 export function CurrentActivity() {
+  // Avoid SSR/client mismatches for time-based UI by deferring certain renders until after mount
+  const [mounted, setMounted] = useState(false)
   const [timeRemaining, setTimeRemaining] = useState<string>('')
   const [progress, setProgress] = useState<number>(0)
   const [isPomodoroActive, setIsPomodoroActive] = useState(false)
   const [pomodoroTime, setPomodoroTime] = useState(25 * 60) // 25 minutes in seconds
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const updateTimer = () => {
@@ -83,6 +89,12 @@ export function CurrentActivity() {
 
   const currentCategoryData = TIME_BLOCK_CATEGORIES[mockCurrentActivity.category]
   const nextCategoryData = TIME_BLOCK_CATEGORIES[mockNextActivity.category]
+
+  const formatLocalTime = (date: Date) =>
+    date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
 
   return (
     <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
@@ -162,10 +174,7 @@ export function CurrentActivity() {
               <div className="flex-1">
                 <div className="text-sm font-medium">{mockNextActivity.title}</div>
                 <div className="text-xs text-muted-foreground">
-                  {mockNextActivity.startTime.toLocaleTimeString('en-US', { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                  })}
+                  {mounted ? formatLocalTime(mockNextActivity.startTime) : '--:--'}
                 </div>
               </div>
               <Clock className="h-4 w-4 text-muted-foreground" />
