@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -64,7 +64,7 @@ const WORKOUT_SCHEDULES = {
 }
 
 export function WorkoutDashboard() {
-  const [stats, setStats] = useState<WorkoutStats>({
+  const [stats] = useState<WorkoutStats>({
     currentWeek: 1,
     completedWorkouts: 3,
     totalWorkouts: 4,
@@ -149,12 +149,12 @@ export function WorkoutDashboard() {
         </Card>
       </div>
 
-      {/* Today's Workout */}
+  {/* Today&apos;s Workout */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Dumbbell className="h-5 w-5" />
-            Today's Workout
+            Today&apos;s Workout
           </CardTitle>
           <CardDescription>
             Scheduled training session for {currentDate.toLocaleDateString()}

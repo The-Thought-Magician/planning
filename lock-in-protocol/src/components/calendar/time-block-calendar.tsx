@@ -11,7 +11,6 @@ import {
   ChevronRight, 
   Plus, 
   Edit, 
-  MoreHorizontal,
   Clock,
   CheckCircle,
   Play
@@ -65,10 +64,10 @@ export function TimeBlockCalendar() {
 
   const formatDateKey = (date: Date) => format(date, 'yyyy-MM-dd')
 
-  const getTodaySchedule = () => {
-    const dateKey = formatDateKey(selectedDate)
-    return mockWeeklySchedule[dateKey as keyof typeof mockWeeklySchedule] || []
-  }
+  // const getTodaySchedule = () => {
+  //   const dateKey = formatDateKey(selectedDate)
+  //   return mockWeeklySchedule[dateKey as keyof typeof mockWeeklySchedule] || []
+  // }
 
   const getWeekDays = () => {
     const days = []
@@ -249,7 +248,7 @@ export function TimeBlockCalendar() {
       </CardHeader>
       
       <CardContent>
-        <Tabs value={view} onValueChange={(value) => setView(value as any)} className="space-y-4">
+  <Tabs value={view} onValueChange={(value) => setView(value as 'day' | 'week' | 'month')} className="space-y-4">
           <div className="flex items-center justify-between">
             <TabsList>
               <TabsTrigger value="day">Day</TabsTrigger>
@@ -300,6 +299,9 @@ export function TimeBlockCalendar() {
               className="rounded-md border"
             />
           </TabsContent>
+          {selectedTimeBlock && (
+            <div className="text-xs text-muted-foreground">Selected block ID: {selectedTimeBlock}</div>
+          )}
         </Tabs>
       </CardContent>
     </Card>

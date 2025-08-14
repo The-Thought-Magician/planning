@@ -1,5 +1,8 @@
+'use client';
+
 import { createClient } from '@supabase/supabase-js'
-import { createClientComponentClient } from '@supabase/ssr'
+import { createBrowserClient  } from '@supabase/ssr'
+
 
 // For client-side auth
 export const supabase = createClient(
@@ -8,10 +11,11 @@ export const supabase = createClient(
 )
 
 // For client components
-export const createSupabaseClient = () => {
-  return createClientComponentClient()
-}
-
+export const createSupabaseClient = () =>
+  createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 // Simple auth functions for single-user setup
 export const authService = {
   // Check if user is authenticated
@@ -42,7 +46,7 @@ export const authService = {
   },
 
   // Listen to auth changes
-  onAuthStateChange(callback: (event: string, session: any) => void) {
+  onAuthStateChange(callback: (event: string, session: { user: { id: string } | null } | null) => void) {
     return supabase.auth.onAuthStateChange(callback)
   }
 }

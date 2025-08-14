@@ -97,7 +97,7 @@ export function DailyProgress() {
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-xl">Today's Progress</CardTitle>
+            <CardTitle className="text-xl">Today&apos;s Progress</CardTitle>
             <CardDescription>
               Track your Lock-In Protocol metrics for {new Date().toLocaleDateString('en-US', { 
                 weekday: 'long',

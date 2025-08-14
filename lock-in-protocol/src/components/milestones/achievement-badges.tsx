@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Award, Lock, Star, Trophy, Target } from 'lucide-react'
+import { Lock, Star, Trophy, Target } from 'lucide-react'
 
 interface Achievement {
   id: string

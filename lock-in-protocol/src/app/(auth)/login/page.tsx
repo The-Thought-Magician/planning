@@ -21,7 +21,7 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const { data, error } = await signIn(email, password)
+      const { error } = await signIn(email, password)
       
       if (error) {
         toast.error(error.message)
@@ -29,7 +29,8 @@ export default function LoginPage() {
         toast.success('Welcome to Lock-In Protocol!')
         router.push('/dashboard')
       }
-    } catch (error) {
+    } catch (err) {
+      console.error(err)
       toast.error('An unexpected error occurred')
     } finally {
       setLoading(false)

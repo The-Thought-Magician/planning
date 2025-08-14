@@ -14,9 +14,7 @@ import {
   Save, 
   Trash2, 
   Copy, 
-  Clock,
   Calendar,
-  Settings,
   Zap
 } from 'lucide-react'
 import { TIME_BLOCK_CATEGORIES } from '@/lib/constants'
@@ -62,7 +60,15 @@ const scheduleTemplates = [
 export function ScheduleEditor() {
   const [selectedTemplate, setSelectedTemplate] = useState<string>('')
   const [isEditing, setIsEditing] = useState(false)
-  const [editingBlock, setEditingBlock] = useState<any>(null)
+  type TemplateBlock = {
+    title: string
+    category: TimeBlockCategory
+    startTime: string
+    endTime: string
+    description?: string
+    notes?: string
+  }
+  const [editingBlock, setEditingBlock] = useState<TemplateBlock | null>(null)
 
   const {
     register,
@@ -83,7 +89,7 @@ export function ScheduleEditor() {
     reset()
   }
 
-  const handleEditBlock = (block: any) => {
+  const handleEditBlock = (block: TemplateBlock) => {
     setEditingBlock(block)
     setIsEditing(true)
     setValue('title', block.title)
@@ -157,7 +163,15 @@ export function ScheduleEditor() {
                         <div
                           key={index}
                           className="flex items-center justify-between p-2 rounded border cursor-pointer hover:bg-muted/30"
-                          onClick={() => handleEditBlock(block)}
+                          onClick={() => {
+                            const [startTime, endTime] = block.time.split('-')
+                            handleEditBlock({
+                              title: block.title,
+                              category: block.category as TimeBlockCategory,
+                              startTime,
+                              endTime,
+                            })
+                          }}
                         >
                           <div className="flex items-center space-x-2">
                             <span className="text-sm">{categoryData.icon}</span>

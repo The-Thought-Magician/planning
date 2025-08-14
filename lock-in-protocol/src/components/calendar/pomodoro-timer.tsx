@@ -12,7 +12,6 @@ import {
   Play, 
   Pause, 
   RotateCcw, 
-  Settings, 
   Coffee, 
   Target,
   Clock,
@@ -22,21 +21,65 @@ import {
 } from 'lucide-react'
 import { POMODORO_SETTINGS } from '@/lib/constants'
 import { usePomodoroNotifications } from '@/hooks/use-notifications'
+import { useCallback } from 'react'
 
 type TimerState = 'idle' | 'work' | 'short-break' | 'long-break'
 type TimerStatus = 'stopped' | 'running' | 'paused'
+
+type PomodoroSettings = {
+  WORK_DURATION: number
+  SHORT_BREAK: number
+  LONG_BREAK: number
+  LONG_BREAK_INTERVAL: number
+}
 
 export function PomodoroTimer() {
   const [timerState, setTimerState] = useState<TimerState>('idle')
   const [timerStatus, setTimerStatus] = useState<TimerStatus>('stopped')
   const [timeRemaining, setTimeRemaining] = useState(POMODORO_SETTINGS.WORK_DURATION * 60) // in seconds
   const [completedPomodoros, setCompletedPomodoros] = useState(0)
-  const [settings, setSettings] = useState(POMODORO_SETTINGS)
+  const [settings, setSettings] = useState<PomodoroSettings>({ ...POMODORO_SETTINGS })
   const [isSoundEnabled, setIsSoundEnabled] = useState(true)
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const initialTimeRef = useRef(settings.WORK_DURATION * 60)
   const { scheduleBreakNotification } = usePomodoroNotifications()
+
+  const handleTimerComplete = useCallback(() => {
+    setTimerStatus('stopped')
+    
+    if (isSoundEnabled) {
+      // Play completion sound (would implement actual sound here)
+      console.log('🔔 Timer completed!')
+    }
+
+    if (timerState === 'work') {
+      setCompletedPomodoros(prev => prev + 1)
+      const newCount = completedPomodoros + 1
+      
+      if (newCount % settings.LONG_BREAK_INTERVAL === 0) {
+        // Long break time
+        setTimerState('long-break')
+        setTimeRemaining(settings.LONG_BREAK * 60)
+        initialTimeRef.current = settings.LONG_BREAK * 60
+        // Schedule a notification for the long break starting now
+        const now = new Date()
+        scheduleBreakNotification?.('long', now)
+      } else {
+        // Short break time
+        setTimerState('short-break')
+        setTimeRemaining(settings.SHORT_BREAK * 60)
+        initialTimeRef.current = settings.SHORT_BREAK * 60
+        const now = new Date()
+        scheduleBreakNotification?.('short', now)
+      }
+    } else {
+      // Break is over, back to work
+      setTimerState('work')
+      setTimeRemaining(settings.WORK_DURATION * 60)
+      initialTimeRef.current = settings.WORK_DURATION * 60
+    }
+  }, [completedPomodoros, isSoundEnabled, scheduleBreakNotification, settings.LONG_BREAK, settings.LONG_BREAK_INTERVAL, settings.SHORT_BREAK, settings.WORK_DURATION, timerState])
 
   useEffect(() => {
     if (timerStatus === 'running' && timeRemaining > 0) {
@@ -61,7 +104,7 @@ export function PomodoroTimer() {
         clearInterval(intervalRef.current)
       }
     }
-  }, [timerStatus, timeRemaining])
+  }, [timerStatus, timeRemaining, handleTimerComplete])
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -93,36 +136,7 @@ export function PomodoroTimer() {
     handleTimerComplete()
   }
 
-  const handleTimerComplete = () => {
-    setTimerStatus('stopped')
-    
-    if (isSoundEnabled) {
-      // Play completion sound (would implement actual sound here)
-      console.log('🔔 Timer completed!')
-    }
-
-    if (timerState === 'work') {
-      setCompletedPomodoros(prev => prev + 1)
-      const newCount = completedPomodoros + 1
-      
-      if (newCount % settings.LONG_BREAK_INTERVAL === 0) {
-        // Long break time
-        setTimerState('long-break')
-        setTimeRemaining(settings.LONG_BREAK * 60)
-        initialTimeRef.current = settings.LONG_BREAK * 60
-      } else {
-        // Short break time
-        setTimerState('short-break')
-        setTimeRemaining(settings.SHORT_BREAK * 60)
-        initialTimeRef.current = settings.SHORT_BREAK * 60
-      }
-    } else {
-      // Break is over, back to work
-      setTimerState('work')
-      setTimeRemaining(settings.WORK_DURATION * 60)
-      initialTimeRef.current = settings.WORK_DURATION * 60
-    }
-  }
+  
 
   const getTimerStateInfo = () => {
     switch (timerState) {

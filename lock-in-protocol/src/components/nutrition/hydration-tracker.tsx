@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -162,7 +162,7 @@ export function HydrationTracker() {
   const nextReminder = getTimeUntilNextReminder()
   const currentMilestone = getCurrentMilestone()
   const nextMilestone = getNextMilestone()
-  const currentTime = new Date().toTimeString().slice(0, 5)
+  // const currentTime = new Date().toTimeString().slice(0, 5)
 
   return (
     <div className="space-y-6">
@@ -170,7 +170,7 @@ export function HydrationTracker() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Today's Progress</CardTitle>
+            <CardTitle className="text-sm font-medium">Today&apos;s Progress</CardTitle>
             <Droplets className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
@@ -298,7 +298,7 @@ export function HydrationTracker() {
       {/* Recent Entries */}
       <Card>
         <CardHeader>
-          <CardTitle>Today's Hydration Log</CardTitle>
+          <CardTitle>Today&apos;s Hydration Log</CardTitle>
           <CardDescription>
             {todayEntries.length} entries • Last: {hydrationGoal.lastIntakeTime ? format(hydrationGoal.lastIntakeTime, 'HH:mm') : 'None'}
           </CardDescription>

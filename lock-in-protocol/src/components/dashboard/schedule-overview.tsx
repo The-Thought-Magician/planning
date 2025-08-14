@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { CheckCircle, Clock, Edit, MoreHorizontal, Play } from 'lucide-react'
-import { TIME_BLOCK_CATEGORIES, DAILY_SCHEDULE_TEMPLATE } from '@/lib/constants'
+import { TIME_BLOCK_CATEGORIES } from '@/lib/constants'
 import { TimeBlockCategory } from '@prisma/client'
 import Link from 'next/link'
 
@@ -117,7 +117,7 @@ export function ScheduleOverview() {
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-xl">Today's Schedule</CardTitle>
+            <CardTitle className="text-xl">Today&apos;s Schedule</CardTitle>
             <CardDescription>
               {new Date().toLocaleDateString('en-US', { 
                 weekday: 'long',

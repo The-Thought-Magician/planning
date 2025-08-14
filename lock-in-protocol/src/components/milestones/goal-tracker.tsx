@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { Plus, Edit, Calendar, Target, CheckCircle } from 'lucide-react'
+import { Plus, Calendar, Target, CheckCircle } from 'lucide-react'
 import { MilestoneCategory } from '@prisma/client'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
@@ -148,7 +148,7 @@ export function GoalTracker() {
               </CardDescription>
             </div>
             <div className="flex gap-2">
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <Select value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as MilestoneCategory | 'all')}>
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Filter by category" />
                 </SelectTrigger>

@@ -1,9 +1,8 @@
 'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area } from 'recharts'
 import { TrendingUp, TrendingDown, Calendar, Target, Zap, Award } from 'lucide-react'
 
 const WEEKLY_DATA = [
@@ -196,7 +195,7 @@ export function AnalyticsDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Daily Energy & Focus</CardTitle>
-            <CardDescription>This week's energy and focus levels</CardDescription>
+            <CardDescription>This week&apos;s energy and focus levels</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px]">
@@ -239,7 +238,7 @@ export function AnalyticsDashboard() {
                 <h4 className="font-medium text-blue-800">Deep Work Goal</h4>
               </div>
               <p className="text-sm text-blue-700">
-                You're averaging 7.2 hours of deep work per week. Target: 8 hours. Almost there!
+                You&apos;re averaging 7.2 hours of deep work per week. Target: 8 hours. Almost there!
               </p>
             </div>
             

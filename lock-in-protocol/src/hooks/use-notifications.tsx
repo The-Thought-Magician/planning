@@ -158,7 +158,6 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             icon: '/icons/icon-192x192.png',
             badge: '/icons/icon-72x72.png',
             tag: notification.tag,
-            vibrate: preferences.vibrationEnabled ? [100, 50, 100] : undefined,
             silent: !preferences.soundEnabled
           });
         }, delay);
@@ -250,10 +249,10 @@ export function useScheduleNotifications() {
     
     return scheduleNotification({
       title: 'Upcoming Activity',
-      message: `${activityName} starts in ${preferences.reminderTime} minutes`,
+      message: `${activityName} (${activityType}) starts in ${preferences.reminderTime} minutes`,
       scheduledTime: reminderTime,
       type: NotificationType.SCHEDULE_REMINDER,
-      tag: `activity-reminder-${activityTime.getTime()}`,
+      tag: `activity-reminder-${activityType}-${activityTime.getTime()}`,
       actions: [
         { action: 'view', title: 'View Schedule' },
         { action: 'snooze', title: 'Remind in 5 min' }
@@ -327,7 +326,7 @@ export function useNutritionNotifications() {
 
     return scheduleNotification({
       title: 'Meal Time',
-      message: `Time for ${mealName}! Don't forget to log your meal.`,
+  message: `Time for ${mealName}! Do not forget to log your meal.`,
       scheduledTime: mealTime,
       type: NotificationType.MEAL_REMINDER,
       tag: `meal-reminder-${mealTime.getTime()}`,

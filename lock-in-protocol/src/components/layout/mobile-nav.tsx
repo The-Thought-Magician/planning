@@ -41,7 +41,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
           
           {/* Mobile Quick Stats */}
           <div className="border-t pt-4">
-            <h3 className="mb-3 text-sm font-semibold">Today's Progress</h3>
+            <h3 className="mb-3 text-sm font-semibold">Today&apos;s Progress</h3>
             <div className="grid gap-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Schedule Adherence</span>

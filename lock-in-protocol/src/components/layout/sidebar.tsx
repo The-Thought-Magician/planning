@@ -5,11 +5,9 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { NAVIGATION_ITEMS } from '@/lib/constants'
 import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
+// (no ScrollArea used here)
 
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-  
-}
+type SidebarProps = React.HTMLAttributes<HTMLDivElement>
 
 export function Sidebar({ className, ...props }: SidebarProps) {
   const pathname = usePathname()
@@ -47,8 +45,8 @@ export function Sidebar({ className, ...props }: SidebarProps) {
         
         {/* Quick Stats Section */}
         <div className="px-3 py-2">
-          <h3 className="mb-2 px-4 text-sm font-semibold tracking-tight text-muted-foreground">
-            Today's Progress
+            <h3 className="mb-2 px-4 text-sm font-semibold tracking-tight text-muted-foreground">
+            Today&apos;s Progress
           </h3>
           <div className="space-y-2 px-4">
             <div className="flex items-center justify-between text-sm">

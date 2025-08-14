@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
-import { Clock, Utensils, CheckCircle, Calendar, Plus, Edit } from 'lucide-react'
+import { Clock, Utensils, CheckCircle, Calendar, Edit } from 'lucide-react'
 import { MealType } from '@prisma/client'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
@@ -85,7 +85,7 @@ const MEAL_TIMING_WINDOWS = {
 
 export function MealTracker() {
   const [todayMeals, setTodayMeals] = useState<MealEntry[]>([])
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+  // const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [editingMeal, setEditingMeal] = useState<string | null>(null)
 
   useEffect(() => {
@@ -212,7 +212,7 @@ export function MealTracker() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{Math.round(getCompletionRate())}%</div>
-            <p className="text-xs text-muted-foreground">today's adherence</p>
+            <p className="text-xs text-muted-foreground">today&apos;s adherence</p>
           </CardContent>
         </Card>
 
@@ -233,7 +233,7 @@ export function MealTracker() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            Today's Meal Plan
+            Today&apos;s Meal Plan
           </CardTitle>
           <CardDescription>
             Track your meal timing and completion throughout the day

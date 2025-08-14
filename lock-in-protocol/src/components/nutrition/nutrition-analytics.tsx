@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
-import { TrendingUp, TrendingDown, Calendar, Target, Droplets, Utensils, Pill, Award } from 'lucide-react'
-import { format, subDays, startOfWeek, endOfWeek } from 'date-fns'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
+import { TrendingUp, TrendingDown, Target, Droplets, Utensils, Pill, Award } from 'lucide-react'
+import { format } from 'date-fns'
 
 interface NutritionMetric {
   date: string
@@ -54,7 +54,7 @@ const SUPPLEMENT_DISTRIBUTION_DATA = [
 ]
 
 export function NutritionAnalytics() {
-  const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('week')
+  // const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('week')
   const [weeklyData] = useState<NutritionMetric[]>(MOCK_WEEKLY_DATA)
 
   const calculateWeeklySummary = (): WeeklySummary => {
@@ -446,7 +446,7 @@ export function NutritionAnalytics() {
                       <h4 className="font-medium text-green-800">Excellent Performance!</h4>
                     </div>
                     <p className="text-sm text-green-700">
-                      You're maintaining excellent nutrition habits. Consider tracking more detailed metrics like meal macronutrients or supplement timing precision.
+                      You&apos;re maintaining excellent nutrition habits. Consider tracking more detailed metrics like meal macronutrients or supplement timing precision.
                     </p>
                   </div>
                 )}

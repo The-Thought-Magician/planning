@@ -119,7 +119,7 @@ export function WeeklyReview() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>This Week's Review</CardTitle>
+              <CardTitle>This Week&apos;s Review</CardTitle>
               <CardDescription>
                 Week of {format(currentWeek, 'MMM dd')} - {format(endOfWeek(currentWeek), 'MMM dd, yyyy')}
               </CardDescription>
