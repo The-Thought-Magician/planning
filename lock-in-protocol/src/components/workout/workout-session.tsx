@@ -56,7 +56,7 @@ export function WorkoutSession() {
   const [sessionNotes, setSessionNotes] = useState('')
 
   useEffect(() => {
-    let interval: NodeJS.Timeout
+    let interval: ReturnType<typeof setInterval>
     if (sessionStarted) {
       interval = setInterval(() => {
         setSessionTime(prev => prev + 1)
@@ -78,7 +78,7 @@ export function WorkoutSession() {
       id: `exercise-${index}`,
       sessionId: 'current-session',
       exerciseName: exercise.name,
-      sets: Array(exercise.sets).fill(null).map((_, setIndex) => ({
+      sets: Array(exercise.sets).fill(null).map((_, _setIndex) => ({
         reps: 0,
         weight: 0,
         completed: false,

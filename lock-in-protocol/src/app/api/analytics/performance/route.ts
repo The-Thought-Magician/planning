@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
+import { DailyMetric, WorkoutSession, TimeBlock, Milestone, MealEntry, SupplementLog } from '@prisma/client'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -168,25 +169,28 @@ export async function GET(request: NextRequest) {
 }
 
 // Helper functions for performance calculations
-function calculateTrend(data: any[], field: string): { direction: string, percentage: number, data: number[] } {
-  if (data.length < 2) return { direction: 'stable', percentage: 0, data: [] }
-  
-  const values = data.map(item => item[field]).filter(val => val !== null && val !== undefined)
-  if (values.length < 2) return { direction: 'stable', percentage: 0, data: values }
-  
+function calculateTrend(data: Record<string, unknown>[], field: string): { direction: string; percentage: number; data: number[] } {
+  if (data.length < 2) { return { direction: 'stable', percentage: 0, data: [] } }
+
+  const values = data
+    .map(item => Number((item as any)[field]))
+    .filter((val) => Number.isFinite(val))
+
+  if (values.length < 2) { return { direction: 'stable', percentage: 0, data: values } }
+
   const firstHalf = values.slice(0, Math.floor(values.length / 2))
   const secondHalf = values.slice(Math.floor(values.length / 2))
-  
+
   const firstAvg = firstHalf.reduce((sum, val) => sum + val, 0) / firstHalf.length
   const secondAvg = secondHalf.reduce((sum, val) => sum + val, 0) / secondHalf.length
-  
+
   const percentage = firstAvg !== 0 ? ((secondAvg - firstAvg) / firstAvg) * 100 : 0
   const direction = percentage > 5 ? 'up' : percentage < -5 ? 'down' : 'stable'
-  
+
   return { direction, percentage: Math.abs(percentage), data: values }
 }
 
-function calculateProductivityTrend(metrics: any[]) {
+function calculateProductivityTrend(metrics: DailyMetric[]) {
   const productivityScores = metrics.map(m => {
     let score = 0
     score += m.scheduleAdherence * 30
@@ -196,10 +200,10 @@ function calculateProductivityTrend(metrics: any[]) {
     return score
   })
   
-  return calculateTrend(productivityScores.map((score, index) => ({ productivityScore: score })), 'productivityScore')
+  return calculateTrend(productivityScores.map((score, _index) => ({ productivityScore: score })), 'productivityScore')
 }
 
-function calculateWellnessTrend(metrics: any[]) {
+function calculateWellnessTrend(metrics: DailyMetric[]) {
   const wellnessScores = metrics.map(m => {
     let score = 0
     let factors = 0
@@ -220,12 +224,12 @@ function calculateWellnessTrend(metrics: any[]) {
     return factors > 0 ? (score / factors) * 100 : 0
   })
   
-  return calculateTrend(wellnessScores.map((score, index) => ({ wellnessScore: score })), 'wellnessScore')
+  return calculateTrend(wellnessScores.map((score, _index) => ({ wellnessScore: score })), 'wellnessScore')
 }
 
-function calculateConsistencyScore(metrics: any[], workouts: any[]): number {
+function calculateConsistencyScore(metrics: DailyMetric[], workouts: WorkoutSession[]): number {
   const totalDays = metrics.length
-  if (totalDays === 0) return 0
+  if (totalDays === 0) {return 0}
   
   let consistentDays = 0
   
@@ -243,7 +247,7 @@ function calculateConsistencyScore(metrics: any[], workouts: any[]): number {
   return (consistentDays / totalDays) * 100
 }
 
-function calculateFitnessPerformance(workouts: any[], metrics: any[]) {
+function calculateFitnessPerformance(workouts: Array<WorkoutSession & { exercises: any[] }>, metrics: DailyMetric[]) {
   const completedWorkouts = workouts.filter(w => w.completed)
   const workoutDays = new Set(workouts.map(w => new Date(w.date).toDateString())).size
   
@@ -260,7 +264,7 @@ function calculateFitnessPerformance(workouts: any[], metrics: any[]) {
   }
 }
 
-function calculateProductivityPerformance(metrics: any[], timeBlocks: any[]) {
+function calculateProductivityPerformance(metrics: DailyMetric[], timeBlocks: TimeBlock[]) {
   const totalPomodoros = metrics.reduce((sum, m) => sum + m.pomodoroCount, 0)
   const totalDeepWork = metrics.reduce((sum, m) => sum + m.deepWorkHours, 0)
   const completedBlocks = timeBlocks.filter(tb => tb.completed).length
@@ -278,7 +282,7 @@ function calculateProductivityPerformance(metrics: any[], timeBlocks: any[]) {
   }
 }
 
-function calculateNutritionPerformance(meals: any[], supplements: any[]) {
+function calculateNutritionPerformance(meals: MealEntry[], supplements: SupplementLog[]) {
   return {
     mealsLogged: meals.length,
     mealsCompleted: meals.filter(m => m.completed).length,
@@ -291,7 +295,7 @@ function calculateNutritionPerformance(meals: any[], supplements: any[]) {
   }
 }
 
-function calculateGoalsPerformance(milestones: any[]) {
+function calculateGoalsPerformance(milestones: Milestone[]) {
   return {
     totalMilestones: milestones.length,
     completedMilestones: milestones.filter(m => m.completed).length,
@@ -306,7 +310,7 @@ function calculateGoalsPerformance(milestones: any[]) {
   }
 }
 
-function calculateHabitsPerformance(timeBlocks: any[], metrics: any[]) {
+function calculateHabitsPerformance(timeBlocks: TimeBlock[], metrics: DailyMetric[]) {
   // Simplified habit tracking based on consistent activities
   const morningBlocks = timeBlocks.filter(tb => 
     tb.category.includes('MORNING') || 
@@ -353,7 +357,7 @@ function generateDailyPerformanceData(metrics: any[], workouts: any[], timeBlock
   })
 }
 
-function generateWeeklyPerformance(weeklyReviews: any[], metrics: any[]) {
+function generateWeeklyPerformance(weeklyReviews: Record<string, unknown>[], _metrics: Record<string, unknown>[]) {
   return weeklyReviews.map(review => ({
     weekStarting: review.weekStarting,
     overallRating: review.overallRating,
@@ -399,7 +403,7 @@ function generatePerformanceInsights(metrics: any[], workouts: any[], reviews: a
 }
 
 function compareWeeklyPerformance(metrics: any[]) {
-  if (metrics.length < 14) return null
+  if (metrics.length < 14) {return null}
   
   const thisWeek = metrics.slice(-7)
   const lastWeek = metrics.slice(-14, -7)
@@ -415,7 +419,7 @@ function compareWeeklyPerformance(metrics: any[]) {
 }
 
 function compareMonthlyPerformance(metrics: any[]) {
-  if (metrics.length < 60) return null
+  if (metrics.length < 60) {return null}
   
   const thisMonth = metrics.slice(-30)
   const lastMonth = metrics.slice(-60, -30)
@@ -430,7 +434,7 @@ function compareMonthlyPerformance(metrics: any[]) {
   }
 }
 
-function calculatePersonalBests(metrics: any[], workouts: any[]) {
+function calculatePersonalBests(metrics: DailyMetric[], workouts: WorkoutSession[]) {
   return {
     bestPomodoroDay: Math.max(...metrics.map(m => m.pomodoroCount), 0),
     bestDeepWorkDay: Math.max(...metrics.map(m => m.deepWorkHours), 0),
@@ -440,8 +444,8 @@ function calculatePersonalBests(metrics: any[], workouts: any[]) {
   }
 }
 
-function calculateMilestoneProgress(milestones: any[]) {
-  if (milestones.length === 0) return { overall: 0, byCategory: {} }
+function calculateMilestoneProgress(milestones: Milestone[]) {
+  if (milestones.length === 0) {return { overall: 0, byCategory: {} }}
   
   const overall = milestones.reduce((sum, m) => sum + m.progress, 0) / milestones.length
   const byCategory: Record<string, number> = {}
@@ -455,7 +459,7 @@ function calculateMilestoneProgress(milestones: any[]) {
   return { overall, byCategory }
 }
 
-function calculateTargetAchievement(metrics: any[], workouts: any[]) {
+function calculateTargetAchievement(metrics: DailyMetric[], workouts: WorkoutSession[]) {
   const pomodoroTarget = 6 // daily target
   const deepWorkTarget = 4 // hours daily target
   const workoutTarget = 4 // weekly target
@@ -474,7 +478,7 @@ function calculateTargetAchievement(metrics: any[], workouts: any[]) {
   }
 }
 
-function calculateStreakAnalysis(metrics: any[], workouts: any[]) {
+function calculateStreakAnalysis(metrics: DailyMetric[], workouts: WorkoutSession[]) {
   return {
     currentPomodoroStreak: calculateCurrentStreak(metrics.map(m => m.pomodoroCount > 0)),
     currentWorkoutStreak: calculateCurrentStreak(workouts.map(w => w.completed)),
@@ -525,7 +529,7 @@ function getMilestoneCategoryDistribution(milestones: any[]) {
   return distribution
 }
 
-function calculateActivityStreak(timeBlocks: any[], category: string) {
+function calculateActivityStreak(timeBlocks: TimeBlock[], category: string) {
   const relevantBlocks = timeBlocks
     .filter(tb => tb.category.includes(category))
     .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
@@ -533,7 +537,7 @@ function calculateActivityStreak(timeBlocks: any[], category: string) {
   return calculateCurrentStreak(relevantBlocks.map(tb => tb.completed))
 }
 
-function calculateWorkoutStreak(workouts: any[]): number {
+function calculateWorkoutStreak(workouts: WorkoutSession[]): number {
   const sortedWorkouts = workouts
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .map(w => w.completed)
@@ -541,8 +545,8 @@ function calculateWorkoutStreak(workouts: any[]): number {
   return calculateLongestStreak(sortedWorkouts)
 }
 
-function calculateHighestWeeklyPomodoros(metrics: any[]): number {
-  if (metrics.length < 7) return 0
+function calculateHighestWeeklyPomodoros(metrics: DailyMetric[]): number {
+  if (metrics.length < 7) {return 0}
   
   let maxWeekly = 0
   for (let i = 0; i <= metrics.length - 7; i++) {

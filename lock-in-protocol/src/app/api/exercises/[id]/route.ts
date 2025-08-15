@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -11,14 +11,10 @@ import {
 } from '@/lib/api-utils'
 import { workoutExerciseSchema } from '@/lib/validations'
 
-interface RouteParams {
-  params: { id: string }
-}
-
-// PATCH /api/exercises/[id] - Update specific exercise
-export async function PATCH(
-  request: NextRequest,
-  { params }: RouteParams
+// GET /api/exercises/[id] - Get specific exercise
+export async function GET(
+  _request: NextRequest,
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()
@@ -36,7 +32,60 @@ export async function PATCH(
       return createErrorResponse(API_ERRORS.NOT_FOUND, 404)
     }
 
-    const { data: updateData, error: validationError } = await validateRequestBody(
+    // Get exercise with session info
+    const exercise = await prisma.workoutExercise.findFirst({
+      where: {
+        id: params.id,
+        session: {
+          userId: dbUser.id
+        }
+      },
+      include: {
+        session: {
+          select: {
+            id: true,
+            date: true,
+            type: true,
+            completed: true
+          }
+        }
+      }
+    })
+
+    if (!exercise) {
+      return createErrorResponse(API_ERRORS.NOT_FOUND, 404)
+    }
+
+    return createSuccessResponse(exercise)
+
+  } catch (error) {
+    console.error('Get exercise error:', error)
+    return createErrorResponse(API_ERRORS.INTERNAL_ERROR)
+  }
+}
+
+// PATCH /api/exercises/[id] - Update specific exercise
+export async function PATCH(
+  request: NextRequest,
+  { params }: any
+) {
+  try {
+    const { user, error } = await authenticateUser()
+    
+    if (error || !user) {
+      return createErrorResponse(API_ERRORS.UNAUTHORIZED, 401)
+    }
+
+    // Find user in database
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user.email! }
+    })
+
+    if (!dbUser) {
+      return createErrorResponse(API_ERRORS.NOT_FOUND, 404)
+    }
+
+  const { data: updateData, error: validationError } = await validateRequestBody(
       request,
       workoutExerciseSchema.partial()
     )
@@ -70,11 +119,11 @@ export async function PATCH(
     }
 
     // If updating exercise name, check for duplicates in the same session
-    if (updateData.exerciseName && updateData.exerciseName !== existingExercise.exerciseName) {
+  if (updateData && updateData.exerciseName && updateData.exerciseName !== existingExercise.exerciseName) {
       const duplicateExercise = await prisma.workoutExercise.findFirst({
         where: {
           sessionId: existingExercise.sessionId,
-          exerciseName: updateData.exerciseName,
+      exerciseName: updateData.exerciseName,
           id: { not: params.id }
         }
       })
@@ -90,7 +139,11 @@ export async function PATCH(
     // Update exercise
     const exercise = await prisma.workoutExercise.update({
       where: { id: params.id },
-      data: updateData,
+      data: {
+        ...(updateData?.exerciseName ? { exerciseName: updateData.exerciseName } : {}),
+        ...(typeof updateData?.sets !== 'undefined' ? { sets: updateData.sets as unknown as any } : {}),
+        ...(typeof updateData?.notes !== 'undefined' ? { notes: updateData.notes } : {}),
+      },
       include: {
         session: {
           select: {
@@ -113,8 +166,8 @@ export async function PATCH(
 
 // DELETE /api/exercises/[id] - Delete exercise
 export async function DELETE(
-  request: NextRequest,
-  { params }: RouteParams
+  _request: NextRequest,
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()
@@ -166,14 +219,11 @@ export async function OPTIONS() {
   return handleOptions()
 }
 
-export async function GET() {
-  return methodNotAllowed(['PATCH', 'DELETE'])
-}
 
 export async function POST() {
-  return methodNotAllowed(['PATCH', 'DELETE'])
+  return methodNotAllowed(['GET', 'PATCH', 'DELETE'])
 }
 
 export async function PUT() {
-  return methodNotAllowed(['PATCH', 'DELETE'])
+  return methodNotAllowed(['GET', 'PATCH', 'DELETE'])
 }

@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
+import { DailyMetric } from '@prisma/client'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -111,7 +112,7 @@ export async function POST(request: NextRequest) {
       return createErrorResponse(API_ERRORS.NOT_FOUND, 404)
     }
 
-    const { data: reviewData, error: validationError } = await validateRequestBody(
+  const { data: reviewData, error: validationError } = await validateRequestBody(
       request,
       weeklyReviewSchema
     )
@@ -121,12 +122,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if review already exists for this week
-    const existingReview = await prisma.weeklyReview.findFirst({
+  const existingReview = await prisma.weeklyReview.findFirst({
       where: {
         userId: dbUser.id,
         weekStarting: {
-          gte: reviewData.weekStarting,
-          lt: new Date(reviewData.weekStarting.getTime() + 7 * 24 * 60 * 60 * 1000)
+      gte: reviewData!.weekStarting,
+      lt: new Date(reviewData!.weekStarting.getTime() + 7 * 24 * 60 * 60 * 1000)
         }
       }
     })
@@ -137,24 +138,36 @@ export async function POST(request: NextRequest) {
       // Update existing review
       review = await prisma.weeklyReview.update({
         where: { id: existingReview.id },
-        data: reviewData
+        data: {
+          weekStarting: reviewData!.weekStarting,
+          workedWell: reviewData!.workedWell as any,
+          challenges: reviewData!.challenges as any,
+          improvements: reviewData!.improvements as any,
+          overallRating: reviewData!.overallRating,
+          notes: reviewData!.notes,
+        }
       })
     } else {
       // Create new review
       review = await prisma.weeklyReview.create({
         data: {
-          ...reviewData,
+          weekStarting: reviewData!.weekStarting,
+          workedWell: reviewData!.workedWell as any,
+          challenges: reviewData!.challenges as any,
+          improvements: reviewData!.improvements as any,
+          overallRating: reviewData!.overallRating,
+          notes: reviewData!.notes,
           userId: dbUser.id
         }
       })
     }
 
     // Generate analytics for the reviewed week
-    const weekEnd = new Date(reviewData.weekStarting)
+  const weekEnd = new Date(reviewData!.weekStarting)
     weekEnd.setDate(weekEnd.getDate() + 6)
     weekEnd.setHours(23, 59, 59, 999)
     
-    const analytics = await generateWeeklyAnalytics(dbUser.id, reviewData.weekStarting, weekEnd)
+  const analytics = await generateWeeklyAnalytics(dbUser.id, reviewData!.weekStarting, weekEnd)
 
     const response = {
       review,
@@ -302,9 +315,9 @@ async function generateWeeklyAnalytics(userId: string, weekStart: Date, weekEnd:
     },
     
     wellness: {
-      averageSleepQuality: calculateAverage(dailyMetrics.map(m => m.sleepQuality).filter(Boolean)),
-      averageEnergyLevel: calculateAverage(dailyMetrics.map(m => m.energyLevel).filter(Boolean)),
-      averageStressLevel: calculateAverage(dailyMetrics.map(m => m.stressLevel).filter(Boolean)),
+  averageSleepQuality: calculateAverage(dailyMetrics.map(m => m.sleepQuality).filter((v): v is number => v !== null)),
+  averageEnergyLevel: calculateAverage(dailyMetrics.map(m => m.energyLevel).filter((v): v is number => v !== null)),
+  averageStressLevel: calculateAverage(dailyMetrics.map(m => m.stressLevel).filter((v): v is number => v !== null)),
       wellnessScore: calculateWeeklyWellnessScore(dailyMetrics)
     },
     
@@ -344,12 +357,12 @@ function getWorkoutTypeBreakdown(workouts: any[]) {
 }
 
 function calculateAverage(values: number[]): number {
-  if (values.length === 0) return 0
+  if (values.length === 0) {return 0}
   return values.reduce((sum, val) => sum + val, 0) / values.length
 }
 
-function calculateWeeklyProductivityScore(metrics: any[]): number {
-  if (metrics.length === 0) return 0
+function calculateWeeklyProductivityScore(metrics: DailyMetric[]): number {
+  if (metrics.length === 0) {return 0}
   
   let totalScore = 0
   metrics.forEach(metric => {
@@ -364,8 +377,8 @@ function calculateWeeklyProductivityScore(metrics: any[]): number {
   return totalScore / metrics.length
 }
 
-function calculateWeeklyWellnessScore(metrics: any[]): number {
-  if (metrics.length === 0) return 0
+function calculateWeeklyWellnessScore(metrics: DailyMetric[]): number {
+  if (metrics.length === 0) {return 0}
   
   let totalScore = 0
   let validEntries = 0
@@ -399,7 +412,7 @@ function calculateWeeklyWellnessScore(metrics: any[]): number {
 }
 
 function calculateStreak(items: { date: Date, completed: boolean }[]): number {
-  if (items.length === 0) return 0
+  if (items.length === 0) {return 0}
   
   // Sort by date
   items.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())

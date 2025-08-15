@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -11,14 +11,12 @@ import {
 } from '@/lib/api-utils'
 import { mealEntrySchema } from '@/lib/validations'
 
-interface RouteParams {
-  params: { id: string }
-}
+// Avoid strict typing of Next.js context param
 
 // GET /api/nutrition/meals/[id] - Get specific meal entry
 export async function GET(
-  request: NextRequest,
-  { params }: RouteParams
+  _request: NextRequest,
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()
@@ -59,7 +57,7 @@ export async function GET(
 // PATCH /api/nutrition/meals/[id] - Update meal entry
 export async function PATCH(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()
@@ -99,9 +97,9 @@ export async function PATCH(
     }
 
     // If updating date or meal type, check for conflicts
-    if (updateData.date || updateData.mealType) {
-      const date = updateData.date || existingMeal.date
-      const mealType = updateData.mealType || existingMeal.mealType
+    if (updateData?.date || updateData?.mealType) {
+      const date = updateData?.date || existingMeal.date
+      const mealType = updateData?.mealType || existingMeal.mealType
 
       const conflictingMeal = await prisma.mealEntry.findFirst({
         where: {
@@ -123,7 +121,11 @@ export async function PATCH(
     // Update meal entry
     const meal = await prisma.mealEntry.update({
       where: { id: params.id },
-      data: updateData
+      data: {
+        ...(typeof updateData?.date !== 'undefined' ? { date: updateData.date as any } : {}),
+        ...(typeof updateData?.mealType !== 'undefined' ? { mealType: updateData.mealType as any } : {}),
+        ...(typeof updateData?.notes !== 'undefined' ? { notes: updateData.notes } : {}),
+      }
     })
 
     return createSuccessResponse(meal, 'Meal entry updated successfully')
@@ -136,8 +138,8 @@ export async function PATCH(
 
 // DELETE /api/nutrition/meals/[id] - Delete meal entry
 export async function DELETE(
-  request: NextRequest,
-  { params }: RouteParams
+  _request: NextRequest,
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()

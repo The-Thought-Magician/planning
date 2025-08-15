@@ -95,7 +95,7 @@ export function GoalWizard() {
   }
 
   const addListItem = (field: keyof Pick<GoalFormData, 'success_criteria' | 'obstacles' | 'resources' | 'steps'>, item: string) => {
-    if (!item.trim()) return
+    if (!item.trim()) {return}
     setGoalData(prev => ({
       ...prev,
       [field]: [...(prev[field] as string[]), item.trim()]

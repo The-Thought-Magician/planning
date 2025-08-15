@@ -8,23 +8,37 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { CheckCircle, Clock, Edit, MoreHorizontal, Play, AlertCircle } from 'lucide-react'
 import { TIME_BLOCK_CATEGORIES } from '@/lib/constants'
 import { TimeBlockCategory } from '@prisma/client'
-import { useTodaysTimeBlocks, useUpdateTimeBlock } from '@/hooks/api/use-dashboard'
+import { useTimeBlocks } from '@/hooks/use-dashboard'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '@/lib/api'
 import { toast } from 'sonner'
 import Link from 'next/link'
+
+// Component-specific TimeBlock interface
+interface UITimeBlock {
+  id: string
+  title: string
+  startTime: string | Date
+  endTime: string | Date
+  category: string
+  completed: boolean
+  notes?: string
+  pomodoroCount?: number
+}
 
 // Helper functions
 function formatTimeFromDate(date: Date): string {
   return date.toTimeString().slice(0, 5)
 }
 
-function findNextIncompleteTimeBlock(timeBlocks: any[]) {
+function findNextIncompleteTimeBlock(timeBlocks: UITimeBlock[]) {
   const currentTime = getCurrentTime()
   const incompleteBlocks = timeBlocks
     .filter(block => !block.completed)
-    .sort((a, b) => formatTimeFromDate(new Date(a.startTime)).localeCompare(formatTimeFromDate(new Date(b.startTime))))
+    .sort((a, b) => formatTimeFromDate(new Date(a.startTime as any)).localeCompare(formatTimeFromDate(new Date(b.startTime as any))))
   
   return incompleteBlocks.find(block => {
-    const blockStartTime = formatTimeFromDate(new Date(block.startTime))
+    const blockStartTime = formatTimeFromDate(new Date(block.startTime as any))
     return blockStartTime >= currentTime
   }) || incompleteBlocks[0]
 }
@@ -36,7 +50,7 @@ function getTimeUntilBlock(blockStartTime: string): string {
   const blockTime = hours * 60 + minutes
   
   let diff = blockTime - currentTime
-  if (diff < 0) diff += 24 * 60 // Next day
+  if (diff < 0) {diff += 24 * 60} // Next day
   
   const diffHours = Math.floor(diff / 60)
   const diffMinutes = diff % 60
@@ -58,16 +72,27 @@ const isTimeBlockActive = (startTime: string, endTime: string) => {
 }
 
 export function ScheduleOverview() {
+  const today = new Date().toISOString().split('T')[0]
   const {
     data: timeBlocksResponse,
     isLoading,
     error,
-  } = useTodaysTimeBlocks()
+  } = useTimeBlocks(today)
 
-  const updateTimeBlockMutation = useUpdateTimeBlock()
+  const queryClient = useQueryClient()
+  const updateTimeBlockMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => 
+      api.updateTimeBlock(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['time-blocks'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
 
-  const timeBlocks = timeBlocksResponse?.success ? timeBlocksResponse.data || [] : []
-  const completedCount = timeBlocks.filter((block: any) => block.completed).length
+  const timeBlocks: UITimeBlock[] = timeBlocksResponse?.success 
+    ? ((timeBlocksResponse.data as unknown as UITimeBlock[]) || [])
+    : []
+  const completedCount = timeBlocks.filter(block => block.completed).length
   const totalCount = timeBlocks.length
   const adherenceRate = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
 
@@ -78,8 +103,9 @@ export function ScheduleOverview() {
         data: { completed: true },
       })
       toast.success('Time block marked as complete!')
-    } catch (error: any) {
-      toast.error(`Failed to update time block: ${error.message}`)
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      toast.error(`Failed to update time block: ${message}`)
     }
   }
 
@@ -121,19 +147,19 @@ export function ScheduleOverview() {
       
       <CardContent>
         <div className="space-y-3">
-          {timeBlocks.map((timeBlock: any) => {
+          {timeBlocks.map((timeBlock: UITimeBlock) => {
             const categoryData = TIME_BLOCK_CATEGORIES[timeBlock.category as TimeBlockCategory] || {
               icon: '📅',
               color: '#6b7280',
               label: 'Unknown',
             }
-            const startTime = formatTimeFromDate(new Date(timeBlock.startTime))
-            const endTime = formatTimeFromDate(new Date(timeBlock.endTime))
+            const startTime = formatTimeFromDate(new Date(timeBlock.startTime as string))
+            const endTime = formatTimeFromDate(new Date(timeBlock.endTime as string))
             const isActive = isTimeBlockActive(startTime, endTime)
             
             return (
               <div
-                key={timeBlock.id}
+                key={timeBlock.id as string}
                 className={`flex items-center space-x-4 p-4 rounded-lg border transition-all ${
                   isActive 
                     ? 'border-primary bg-primary/5 shadow-sm' 
@@ -166,7 +192,7 @@ export function ScheduleOverview() {
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-2">
-                    <span className="font-medium truncate">{timeBlock.title}</span>
+                    <span className="font-medium truncate">{timeBlock.title as string}</span>
                     <Badge 
                       variant="outline"
                       className="text-xs"
@@ -180,7 +206,7 @@ export function ScheduleOverview() {
                     </Badge>
                     {timeBlock.pomodoroCount && (
                       <Badge variant="secondary" className="text-xs">
-                        🍅 {timeBlock.pomodoroCount}
+                        🍅 {timeBlock.pomodoroCount as number}
                       </Badge>
                     )}
                     {isActive && (
@@ -191,7 +217,7 @@ export function ScheduleOverview() {
                   </div>
                   {timeBlock.notes && (
                     <div className="text-sm text-muted-foreground mt-1 truncate">
-                      {timeBlock.notes}
+                      {timeBlock.notes as string}
                     </div>
                   )}
                 </div>
@@ -202,7 +228,7 @@ export function ScheduleOverview() {
                     <Button 
                       size="sm" 
                       variant="outline"
-                      onClick={() => handleMarkComplete(timeBlock.id)}
+                      onClick={() => handleMarkComplete(timeBlock.id as string)}
                       disabled={updateTimeBlockMutation.isPending}
                     >
                       <CheckCircle className="h-4 w-4" />
@@ -224,7 +250,7 @@ export function ScheduleOverview() {
         <div className="flex items-center justify-between mt-6 pt-4 border-t">
           <div className="text-sm text-muted-foreground">
             {nextBlock ? (
-              <>Next: <span className="font-medium">{nextBlock.title}</span> in {getTimeUntilBlock(formatTimeFromDate(new Date(nextBlock.startTime)))}</>
+              <>Next: <span className="font-medium">{nextBlock.title as string}</span> in {getTimeUntilBlock(formatTimeFromDate(new Date(nextBlock.startTime as string)))}</>
             ) : (
               "All tasks completed!"
             )}
@@ -238,7 +264,7 @@ export function ScheduleOverview() {
             {nextBlock && (
               <Button 
                 size="sm"
-                onClick={() => handleMarkComplete(nextBlock.id)}
+                onClick={() => handleMarkComplete(nextBlock.id as string)}
                 disabled={updateTimeBlockMutation.isPending}
               >
                 Mark Current Complete
@@ -317,7 +343,7 @@ function ScheduleOverviewError({ error }: { error: string }) {
           <span>Error Loading Schedule</span>
         </CardTitle>
         <CardDescription>
-          Unable to load today's schedule
+          Unable to load today&apos;s schedule
         </CardDescription>
       </CardHeader>
       

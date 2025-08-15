@@ -1,5 +1,5 @@
 // API Response Types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean
   data?: T
   error?: string
@@ -307,7 +307,9 @@ export interface HabitCreateRequest {
   targetCount?: number
 }
 
-export interface HabitUpdateRequest extends Partial<HabitCreateRequest> {}
+export interface HabitUpdateRequest extends Partial<HabitCreateRequest> {
+  id?: string
+}
 
 export interface HabitLogRequest {
   logCompletion: boolean
@@ -669,7 +671,7 @@ export interface StreakAnalysis {
 export interface ApiError {
   success: false
   error: string
-  details?: any
+  details?: Record<string, unknown>
 }
 
 // Query Parameter Types

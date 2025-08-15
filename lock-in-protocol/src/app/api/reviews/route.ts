@@ -11,9 +11,9 @@ import {
   getQueryParams,
   API_ERRORS
 } from '@/lib/api-utils'
-import { timeBlockSchema } from '@/lib/validations'
+import { weeklyReviewSchema } from '@/lib/validations'
 
-// GET /api/time-blocks - Get time blocks with filtering and pagination
+// GET /api/reviews - Get weekly reviews with filtering and pagination
 export async function GET(request: NextRequest) {
   try {
     const { user, error } = await authenticateUser()
@@ -37,8 +37,7 @@ export async function GET(request: NextRequest) {
       sortBy, 
       sortOrder, 
       startDate, 
-      endDate,
-      search 
+      endDate 
     } = getQueryParams(request.url)
 
     // Build filters
@@ -48,40 +47,31 @@ export async function GET(request: NextRequest) {
 
     // Date filtering
     if (startDate || endDate) {
-      where.startTime = {}
-      if (startDate) {where.startTime.gte = startDate}
-      if (endDate) {where.startTime.lte = endDate}
-    }
-
-    // Search filtering
-    if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-        { notes: { contains: search, mode: 'insensitive' } }
-      ]
+      where.weekStarting = {}
+      if (startDate) {where.weekStarting.gte = startDate}
+      if (endDate) {where.weekStarting.lte = endDate}
     }
 
     // Get total count for pagination
-    const total = await prisma.timeBlock.count({ where })
+    const total = await prisma.weeklyReview.count({ where })
 
-    // Get time blocks
-    const timeBlocks = await prisma.timeBlock.findMany({
+    // Get weekly reviews
+    const reviews = await prisma.weeklyReview.findMany({
       where,
       orderBy: { [sortBy]: sortOrder },
       skip: (page - 1) * limit,
       take: limit,
     })
 
-    return createPaginatedResponse(timeBlocks, { page, limit, total })
+    return createPaginatedResponse(reviews, { page, limit, total })
 
   } catch (error) {
-    console.error('Get time blocks error:', error)
+    console.error('Get reviews error:', error)
     return createErrorResponse(API_ERRORS.INTERNAL_ERROR)
   }
 }
 
-// POST /api/time-blocks - Create a new time block
+// POST /api/reviews - Create a new weekly review
 export async function POST(request: NextRequest) {
   try {
     const { user, error } = await authenticateUser()
@@ -99,61 +89,47 @@ export async function POST(request: NextRequest) {
       return createErrorResponse(API_ERRORS.NOT_FOUND, 404)
     }
 
-  const { data: timeBlockData, error: validationError } = await validateRequestBody(
+    const { data: reviewData, error: validationError } = await validateRequestBody(
       request,
-      timeBlockSchema
+      weeklyReviewSchema
     )
 
     if (validationError) {
       return createErrorResponse(validationError, 400)
     }
 
-    // Check for overlapping time blocks
-    const overlapping = await prisma.timeBlock.findFirst({
+    // Check if review already exists for this week
+    const existingReview = await prisma.weeklyReview.findFirst({
       where: {
         userId: dbUser.id,
-        OR: [
-          {
-            AND: [
-              { startTime: { lte: timeBlockData!.startTime } },
-              { endTime: { gt: timeBlockData!.startTime } }
-            ]
-          },
-          {
-            AND: [
-              { startTime: { lt: timeBlockData!.endTime } },
-              { endTime: { gte: timeBlockData!.endTime } }
-            ]
-          }
-        ]
+        weekStarting: reviewData!.weekStarting
       }
     })
 
-    if (overlapping) {
+    if (existingReview) {
       return createErrorResponse(
-        'Time block overlaps with existing block', 
+        'Weekly review already exists for this week', 
         409
       )
     }
 
-    // Create time block
-    const timeBlock = await prisma.timeBlock.create({
+    // Create weekly review
+    const review = await prisma.weeklyReview.create({
       data: {
-        title: timeBlockData!.title,
-        description: timeBlockData!.description,
-        startTime: timeBlockData!.startTime,
-        endTime: timeBlockData!.endTime,
-        category: timeBlockData!.category,
-        notes: timeBlockData!.notes,
-        pomodoroCount: timeBlockData!.pomodoroCount,
+        weekStarting: reviewData!.weekStarting,
+        workedWell: reviewData!.workedWell,
+        challenges: reviewData!.challenges,
+        improvements: reviewData!.improvements,
+        overallRating: reviewData!.overallRating,
+        notes: reviewData!.notes,
         userId: dbUser.id,
       }
     })
 
-    return createSuccessResponse(timeBlock, 'Time block created successfully', 201)
+    return createSuccessResponse(review, 'Weekly review created successfully', 201)
 
   } catch (error) {
-    console.error('Create time block error:', error)
+    console.error('Create review error:', error)
     return createErrorResponse(API_ERRORS.INTERNAL_ERROR)
   }
 }

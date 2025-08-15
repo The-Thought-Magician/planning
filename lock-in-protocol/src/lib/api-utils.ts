@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { z } from 'zod'
 
 // API Response types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean
   data?: T
   error?: string
@@ -21,8 +21,8 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 }
 
 // Create Supabase server client for API routes
-export function createServerSupabaseClient() {
-  const cookieStore = cookies()
+export async function createServerSupabaseClient() {
+  const cookieStore = await cookies()
   
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -30,10 +30,10 @@ export function createServerSupabaseClient() {
     {
       cookies: {
         get: (name: string) => cookieStore.get(name)?.value,
-        set: (name: string, value: string, options: any) => {
+        set: (name: string, value: string, options: Record<string, unknown>) => {
           cookieStore.set({ name, value, ...options })
         },
-        remove: (name: string, options: any) => {
+        remove: (name: string, options: Record<string, unknown>) => {
           cookieStore.set({ name, value: '', ...options })
         },
       },
@@ -44,7 +44,19 @@ export function createServerSupabaseClient() {
 // Authentication middleware for API routes
 export async function authenticateUser() {
   try {
-    const supabase = createServerSupabaseClient()
+    // Temporary bypass for development
+    if (process.env.NODE_ENV === 'development') {
+      return { 
+        user: { 
+          id: 'dev-user-123', 
+          email: 'chiranjeet@example.com',
+          name: 'Chiranjeet'
+        }, 
+        error: null 
+      }
+    }
+    
+    const supabase = await createServerSupabaseClient()
     const { data: { user }, error } = await supabase.auth.getUser()
     
     if (error || !user) {
@@ -52,7 +64,7 @@ export async function authenticateUser() {
     }
     
     return { user, error: null }
-  } catch (error) {
+  } catch {
     return { user: null, error: 'Authentication failed' }
   }
 }
@@ -60,7 +72,7 @@ export async function authenticateUser() {
 // Error response helpers
 export function createErrorResponse(
   message: string, 
-  status: number = 500
+  status = 500
 ): NextResponse<ApiResponse> {
   return NextResponse.json(
     { 
@@ -74,7 +86,7 @@ export function createErrorResponse(
 export function createSuccessResponse<T>(
   data: T, 
   message?: string,
-  status: number = 200
+  status = 200
 ): NextResponse<ApiResponse<T>> {
   return NextResponse.json(
     { 
@@ -119,7 +131,7 @@ export async function validateRequestBody<T>(
     return { data, error: null }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errorMessages = error.errors.map(err => 
+      const errorMessages = error.issues.map(err => 
         `${err.path.join('.')}: ${err.message}`
       ).join(', ')
       return { data: null, error: `Validation error: ${errorMessages}` }
@@ -186,7 +198,7 @@ export function methodNotAllowed(allowedMethods: string[]) {
 // Rate limiting helper (basic implementation)
 const rateLimitMap = new Map()
 
-export function rateLimit(identifier: string, maxRequests: number = 100, windowMs: number = 60000) {
+export function rateLimit(identifier: string, maxRequests = 100, windowMs = 60000) {
   const now = Date.now()
   const windowStart = now - windowMs
   

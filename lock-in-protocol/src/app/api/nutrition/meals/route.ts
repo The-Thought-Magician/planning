@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -61,8 +61,8 @@ export async function GET(request: NextRequest) {
       }
     } else if (startDate || endDate) {
       where.date = {}
-      if (startDate) where.date.gte = startDate
-      if (endDate) where.date.lte = endDate
+      if (startDate) {where.date.gte = startDate}
+      if (endDate) {where.date.lte = endDate}
     }
 
     if (mealType) {
@@ -123,8 +123,8 @@ export async function POST(request: NextRequest) {
     const existingMeal = await prisma.mealEntry.findFirst({
       where: {
         userId: dbUser.id,
-        date: mealData.date,
-        mealType: mealData.mealType
+        date: mealData!.date,
+        mealType: mealData!.mealType
       }
     })
 
@@ -138,7 +138,9 @@ export async function POST(request: NextRequest) {
     // Create meal entry
     const meal = await prisma.mealEntry.create({
       data: {
-        ...mealData,
+        date: mealData!.date,
+        mealType: mealData!.mealType,
+        notes: mealData!.notes,
         userId: dbUser.id,
       }
     })

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -20,8 +20,8 @@ export async function GET() {
       return createErrorResponse(API_ERRORS.UNAUTHORIZED, 401)
     }
 
-    // Find or create user in database
-    let dbUser = await prisma.user.findUnique({
+        // Find or create user in database
+    const dbUser = await prisma.user.findUnique({
       where: { email: user.email! },
       include: {
         _count: {
@@ -36,23 +36,28 @@ export async function GET() {
     })
 
     if (!dbUser) {
-      // Create user if doesn't exist
-      dbUser = await prisma.user.create({
+      // Create user if not found  
+      const _newUser = await prisma.user.create({
         data: {
           email: user.email!,
-          name: user.user_metadata?.name || user.email!.split('@')[0],
-        },
-        include: {
-          _count: {
-            select: {
-              timeBlocks: true,
-              workoutSessions: true,
-              milestones: true,
-              dailyMetrics: true,
-            }
-          }
+          name: (user as any).user_metadata?.name || user.email!.split('@')[0],
         }
       })
+
+      // Return newly created user without stats
+      return createSuccessResponse({
+        id: _newUser.id,
+        email: _newUser.email,
+        name: _newUser.name,
+        createdAt: _newUser.createdAt,
+        updatedAt: _newUser.updatedAt,
+        stats: {
+          timeBlocks: 0,
+          workoutSessions: 0,
+          milestones: 0,
+          dailyMetrics: 0,
+        },
+      }, 'User profile retrieved successfully')
     }
 
     return createSuccessResponse({
@@ -91,7 +96,10 @@ export async function PATCH(request: NextRequest) {
     // Update user in database
     const updatedUser = await prisma.user.update({
       where: { email: user.email! },
-      data: updateData,
+      data: {
+        ...(typeof updateData?.email !== 'undefined' ? { email: updateData.email } : {}),
+        ...(typeof updateData?.name !== 'undefined' ? { name: updateData.name } : {}),
+      },
       include: {
         _count: {
           select: {
@@ -110,7 +118,7 @@ export async function PATCH(request: NextRequest) {
       name: updatedUser.name,
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt,
-      stats: updatedUser._count,
+      stats: (updatedUser as any)._count,
     }, 'Profile updated successfully')
 
   } catch (error) {

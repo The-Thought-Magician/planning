@@ -84,9 +84,9 @@ export function HabitStreaks() {
     const lastCompleted = new Date(habit.lastCompleted)
     const daysDiff = Math.floor((today.getTime() - lastCompleted.getTime()) / (1000 * 60 * 60 * 24))
     
-    if (daysDiff === 0) return { status: 'completed', color: 'text-green-600', message: 'Completed today' }
-    if (daysDiff === 1) return { status: 'due', color: 'text-yellow-600', message: 'Due today' }
-    if (daysDiff > 1) return { status: 'overdue', color: 'text-red-600', message: `${daysDiff} days overdue` }
+    if (daysDiff === 0) {return { status: 'completed', color: 'text-green-600', message: 'Completed today' }}
+    if (daysDiff === 1) {return { status: 'due', color: 'text-yellow-600', message: 'Due today' }}
+    if (daysDiff > 1) {return { status: 'overdue', color: 'text-red-600', message: `${daysDiff} days overdue` }}
     return { status: 'unknown', color: 'text-gray-600', message: 'Unknown status' }
   }
 

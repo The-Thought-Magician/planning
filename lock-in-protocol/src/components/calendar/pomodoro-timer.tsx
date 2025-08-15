@@ -41,7 +41,7 @@ export function PomodoroTimer() {
   const [settings, setSettings] = useState<PomodoroSettings>({ ...POMODORO_SETTINGS })
   const [isSoundEnabled, setIsSoundEnabled] = useState(true)
   
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const initialTimeRef = useRef(settings.WORK_DURATION * 60)
   const { scheduleBreakNotification } = usePomodoroNotifications()
 

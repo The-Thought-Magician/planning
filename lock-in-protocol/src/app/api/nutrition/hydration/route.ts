@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -57,8 +57,8 @@ export async function GET(request: NextRequest) {
         lte: endOfDay
       }
     } else if (startDate || endDate) {
-      if (startDate) dateFilter.gte = new Date(startDate)
-      if (endDate) dateFilter.lte = new Date(endDate)
+      if (startDate) {dateFilter.gte = new Date(startDate)}
+      if (endDate) {dateFilter.lte = new Date(endDate)}
     }
 
     // For hydration, we'll use daily metrics table since it has hydration-related fields
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
     // For this implementation, we'll simulate hydration tracking
     // In a real app, you'd have a dedicated hydration table
     
-    const { startOfDay, endOfDay } = getDateRange(hydrationData.date)
+    const { startOfDay, endOfDay } = getDateRange(hydrationData!.date)
     
     // Check if daily metric exists for this date
     let dailyMetric = await prisma.dailyMetric.findFirst({
@@ -175,11 +175,11 @@ export async function POST(request: NextRequest) {
     // Create hydration response
     const hydrationEntry = {
       id: dailyMetric.id,
-      date: hydrationData.date,
-      waterIntake: hydrationData.waterIntake,
+      date: hydrationData!.date,
+      waterIntake: hydrationData!.waterIntake,
       target: 3000,
-      notes: hydrationData.notes,
-      progress: Math.min((hydrationData.waterIntake / 3000) * 100, 100),
+      notes: hydrationData!.notes,
+      progress: Math.min((hydrationData!.waterIntake / 3000) * 100, 100),
       createdAt: dailyMetric.createdAt,
       updatedAt: new Date()
     }
@@ -249,10 +249,10 @@ export async function PATCH(request: NextRequest) {
     const currentIntake = 0 // Would get from hydration table
     let newIntake = currentIntake
 
-    if (updateData.waterIntakeIncrement) {
-      newIntake += updateData.waterIntakeIncrement
-    } else if (updateData.waterIntake !== undefined) {
-      newIntake = updateData.waterIntake
+    if (updateData!.waterIntakeIncrement) {
+      newIntake += updateData!.waterIntakeIncrement
+    } else if (updateData!.waterIntake !== undefined) {
+      newIntake = updateData!.waterIntake
     }
 
     const hydrationEntry = {
@@ -260,7 +260,7 @@ export async function PATCH(request: NextRequest) {
       date: dailyMetric.date,
       waterIntake: newIntake,
       target: 3000,
-      notes: updateData.notes,
+      notes: updateData!.notes,
       progress: Math.min((newIntake / 3000) * 100, 100),
       updatedAt: new Date()
     }

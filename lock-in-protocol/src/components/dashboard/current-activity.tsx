@@ -67,7 +67,7 @@ export function CurrentActivity() {
   }, [])
 
   useEffect(() => {
-    let pomodoroInterval: NodeJS.Timeout
+    let pomodoroInterval: ReturnType<typeof setInterval>
 
     if (isPomodoroActive && pomodoroTime > 0) {
       pomodoroInterval = setInterval(() => {

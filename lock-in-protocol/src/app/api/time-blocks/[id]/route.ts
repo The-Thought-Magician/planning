@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -11,14 +11,12 @@ import {
 } from '@/lib/api-utils'
 import { timeBlockSchema } from '@/lib/validations'
 
-interface RouteParams {
-  params: { id: string }
-}
+// Avoid strict typing of Next.js context param
 
 // GET /api/time-blocks/[id] - Get specific time block
 export async function GET(
-  request: NextRequest,
-  { params }: RouteParams
+  _request: NextRequest,
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()
@@ -59,7 +57,7 @@ export async function GET(
 // PATCH /api/time-blocks/[id] - Update time block
 export async function PATCH(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()
@@ -99,9 +97,9 @@ export async function PATCH(
     }
 
     // If updating time, check for overlaps (excluding current block)
-    if (updateData.startTime || updateData.endTime) {
-      const startTime = updateData.startTime || existingTimeBlock.startTime
-      const endTime = updateData.endTime || existingTimeBlock.endTime
+    if (updateData?.startTime || updateData?.endTime) {
+      const startTime = updateData?.startTime || existingTimeBlock.startTime
+      const endTime = updateData?.endTime || existingTimeBlock.endTime
 
       const overlapping = await prisma.timeBlock.findFirst({
         where: {
@@ -135,7 +133,15 @@ export async function PATCH(
     // Update time block
     const timeBlock = await prisma.timeBlock.update({
       where: { id: params.id },
-      data: updateData
+      data: {
+        ...(typeof updateData?.title !== 'undefined' ? { title: updateData.title } : {}),
+        ...(typeof updateData?.description !== 'undefined' ? { description: updateData.description } : {}),
+        ...(typeof updateData?.startTime !== 'undefined' ? { startTime: updateData.startTime as any } : {}),
+        ...(typeof updateData?.endTime !== 'undefined' ? { endTime: updateData.endTime as any } : {}),
+        ...(typeof updateData?.category !== 'undefined' ? { category: updateData.category as any } : {}),
+        ...(typeof updateData?.notes !== 'undefined' ? { notes: updateData.notes } : {}),
+        ...(typeof updateData?.pomodoroCount !== 'undefined' ? { pomodoroCount: updateData.pomodoroCount } : {}),
+      }
     })
 
     return createSuccessResponse(timeBlock, 'Time block updated successfully')
@@ -148,8 +154,8 @@ export async function PATCH(
 
 // DELETE /api/time-blocks/[id] - Delete time block
 export async function DELETE(
-  request: NextRequest,
-  { params }: RouteParams
+  _request: NextRequest,
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()

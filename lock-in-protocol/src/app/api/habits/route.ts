@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -9,7 +9,6 @@ import {
   methodNotAllowed,
   handleOptions,
   getQueryParams,
-  getDateRange,
   API_ERRORS
 } from '@/lib/api-utils'
 import { z } from 'zod'
@@ -23,12 +22,6 @@ const habitSchema = z.object({
   targetCount: z.number().min(1).default(1),
 })
 
-const habitLogSchema = z.object({
-  habitId: z.string().cuid(),
-  date: z.date(),
-  completed: z.boolean().default(true),
-  notes: z.string().optional()
-})
 
 // GET /api/habits - Get habits (using milestones table with habit category)
 export async function GET(request: NextRequest) {
@@ -58,7 +51,6 @@ export async function GET(request: NextRequest) {
 
     // Get query parameters
     const url = new URL(request.url)
-    const frequency = url.searchParams.get('frequency')
     const active = url.searchParams.get('active')
 
     // Build filters - using milestones table for habits
@@ -145,13 +137,13 @@ export async function POST(request: NextRequest) {
       return createErrorResponse(validationError, 400)
     }
 
-    // Create habit using milestones table
+    // Create habit (in milestones table with category PERSONAL_HABITS)
     const habit = await prisma.milestone.create({
       data: {
         userId: dbUser.id,
         category: 'PERSONAL_HABITS',
-        title: habitData.title,
-        description: habitData.description,
+        title: habitData!.title,
+        description: habitData!.description,
         progress: 0,
         completed: false
       }
@@ -162,8 +154,8 @@ export async function POST(request: NextRequest) {
       id: habit.id,
       title: habit.title,
       description: habit.description,
-      frequency: habitData.frequency,
-      targetCount: habitData.targetCount,
+      frequency: habitData!.frequency,
+      targetCount: habitData!.targetCount,
       currentStreak: 0,
       bestStreak: 0,
       completedToday: false,

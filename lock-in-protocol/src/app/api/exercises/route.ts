@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -122,7 +123,7 @@ export async function POST(request: NextRequest) {
     const { data: exerciseData, error: validationError } = await validateRequestBody(
       request,
       workoutExerciseSchema.extend({
-        sessionId: require('zod').string().cuid()
+        sessionId: z.string().cuid()
       })
     )
 
@@ -130,10 +131,10 @@ export async function POST(request: NextRequest) {
       return createErrorResponse(validationError, 400)
     }
 
-    // Check if workout session exists and belongs to user
+        // Check if workout session exists and belongs to user
     const session = await prisma.workoutSession.findFirst({
       where: {
-        id: exerciseData.sessionId,
+        id: exerciseData!.sessionId,
         userId: dbUser.id
       }
     })
@@ -142,11 +143,11 @@ export async function POST(request: NextRequest) {
       return createErrorResponse('Workout session not found', 404)
     }
 
-    // Check if exercise with same name already exists in this session
+    // Check if exercise with this name already exists in the session
     const existingExercise = await prisma.workoutExercise.findFirst({
       where: {
-        sessionId: exerciseData.sessionId,
-        exerciseName: exerciseData.exerciseName
+        sessionId: exerciseData!.sessionId,
+        exerciseName: exerciseData!.exerciseName
       }
     })
 
@@ -160,10 +161,10 @@ export async function POST(request: NextRequest) {
     // Create exercise
     const exercise = await prisma.workoutExercise.create({
       data: {
-        sessionId: exerciseData.sessionId,
-        exerciseName: exerciseData.exerciseName,
-        sets: exerciseData.sets,
-        notes: exerciseData.notes
+        sessionId: exerciseData!.sessionId,
+        exerciseName: exerciseData!.exerciseName,
+        sets: exerciseData!.sets as any,
+        notes: exerciseData!.notes
       },
       include: {
         session: {

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       return createErrorResponse(API_ERRORS.NOT_FOUND, 404)
     }
 
-    const { page, limit, sortBy, sortOrder } = getQueryParams(request.url)
+  const { page, limit, sortBy, sortOrder } = getQueryParams(request.url)
 
     // Get query parameters
     const url = new URL(request.url)
@@ -214,17 +214,16 @@ export async function GET(request: NextRequest) {
     ]
 
     // Filter achievements based on query parameters
-    let filteredAchievements = allAchievements
-
-    if (category) {
-      filteredAchievements = filteredAchievements.filter(a => a.category === category)
-    }
+    const categoryFiltered = category
+      ? allAchievements.filter(a => a.category === category)
+      : allAchievements
 
     // Simulate checking which achievements are unlocked based on user data
     const userStats = await getUserStats(dbUser.id)
-    
+
+    // Enrich with status
     const achievementsWithStatus = await Promise.all(
-      filteredAchievements.map(async (achievement) => {
+      categoryFiltered.map(async (achievement) => {
         const isUnlocked = await checkAchievementUnlocked(achievement.id, userStats)
         const unlockedAt = isUnlocked ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000) : null
         
@@ -238,18 +237,36 @@ export async function GET(request: NextRequest) {
     )
 
     // Filter by unlocked status if requested
+    let visibleAchievements = achievementsWithStatus
     if (unlocked !== null) {
       const unlockedFilter = unlocked === 'true'
-      filteredAchievements = achievementsWithStatus.filter(a => a.unlocked === unlockedFilter)
+      visibleAchievements = achievementsWithStatus.filter(a => a.unlocked === unlockedFilter)
+    }
+
+    // Optional sorting
+    if (sortBy) {
+      const dir = sortOrder === 'asc' ? 1 : -1
+      visibleAchievements = [...visibleAchievements].sort((a, b) => {
+        switch (sortBy) {
+          case 'title':
+            return a.title.localeCompare(b.title) * dir
+          case 'points':
+            return (a.points - b.points) * dir
+          case 'unlockedAt':
+            return ((a.unlockedAt?.getTime() || 0) - (b.unlockedAt?.getTime() || 0)) * dir
+          default:
+            return 0
+        }
+      })
     }
 
     // Paginate results
-    const total = filteredAchievements.length
+    const total = visibleAchievements.length
     const startIndex = (page - 1) * limit
     const endIndex = startIndex + limit
-    const paginatedAchievements = achievementsWithStatus.slice(startIndex, endIndex)
+    const paginatedAchievements = visibleAchievements.slice(startIndex, endIndex)
 
-    const response = {
+    const _response = {
       achievements: paginatedAchievements,
       summary: {
         totalAchievements: allAchievements.length,
@@ -326,7 +343,7 @@ async function getUserStats(userId: string) {
   }
 }
 
-async function checkAchievementUnlocked(achievementId: string, stats: any): Promise<boolean> {
+async function checkAchievementUnlocked(achievementId: string, stats: Record<string, number>): Promise<boolean> {
   // Simple achievement unlock logic based on stats
   switch (achievementId) {
     case 'first_workout':
@@ -346,7 +363,7 @@ async function checkAchievementUnlocked(achievementId: string, stats: any): Prom
   }
 }
 
-function getAchievementProgress(achievementId: string, stats: any): number {
+function getAchievementProgress(achievementId: string, stats: Record<string, number>): number {
   // Return progress percentage for achievement
   switch (achievementId) {
     case 'first_workout':

@@ -99,7 +99,7 @@ export function HydrationTracker() {
   }
 
   const removeLastEntry = () => {
-    if (todayEntries.length === 0) return
+    if (todayEntries.length === 0) {return}
     
     const lastEntry = todayEntries[0]
     setTodayEntries(prev => prev.slice(1))
@@ -121,9 +121,9 @@ export function HydrationTracker() {
 
   const getHydrationStatus = () => {
     const percentage = getProgressPercentage()
-    if (percentage >= 100) return { status: 'excellent', color: 'text-green-600', message: 'Goal achieved!' }
-    if (percentage >= 75) return { status: 'good', color: 'text-blue-600', message: 'Great progress!' }
-    if (percentage >= 50) return { status: 'moderate', color: 'text-yellow-600', message: 'Keep going!' }
+    if (percentage >= 100) {return { status: 'excellent', color: 'text-green-600', message: 'Goal achieved!' }}
+    if (percentage >= 75) {return { status: 'good', color: 'text-blue-600', message: 'Great progress!' }}
+    if (percentage >= 50) {return { status: 'moderate', color: 'text-yellow-600', message: 'Keep going!' }}
     return { status: 'low', color: 'text-red-600', message: 'Need more water!' }
   }
 
@@ -315,7 +315,7 @@ export function HydrationTracker() {
               {todayEntries.map((entry) => (
                 <div key={entry.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
                     <div>
                       <p className="font-medium">{entry.amount}ml</p>
                       <p className="text-sm text-muted-foreground">
@@ -422,7 +422,7 @@ export function HydrationTracker() {
                 }`}>
                   <div className={`w-2 h-2 rounded-full ${
                     isPassed ? 'bg-gray-400' : 'bg-blue-500'
-                  }`}></div>
+                  }`} />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-sm">{time}</span>

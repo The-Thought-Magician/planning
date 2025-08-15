@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -19,14 +19,12 @@ const habitUpdateSchema = z.object({
   targetCount: z.number().min(1).optional(),
 })
 
-interface RouteParams {
-  params: { id: string }
-}
+// Note: Avoid typing the context param strictly; Next.js validates runtime shape
 
 // GET /api/habits/[id] - Get specific habit
 export async function GET(
-  request: NextRequest,
-  { params }: RouteParams
+  _request: NextRequest,
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()
@@ -85,7 +83,7 @@ export async function GET(
 // PATCH /api/habits/[id] - Update habit or log completion
 export async function PATCH(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()
@@ -151,7 +149,7 @@ export async function PATCH(
     }
 
     // Regular habit update
-    const { data: updateData, error: validationError } = await validateRequestBody(
+  const { data: updateData, error: validationError } = await validateRequestBody(
       request,
       habitUpdateSchema
     )
@@ -174,9 +172,9 @@ export async function PATCH(
     }
 
     // Update habit (only title and description in milestones table)
-    const updatePayload: any = {}
-    if (updateData.title) updatePayload.title = updateData.title
-    if (updateData.description) updatePayload.description = updateData.description
+  const updatePayload: any = {}
+  if (updateData?.title) {updatePayload.title = updateData.title}
+  if (updateData?.description) {updatePayload.description = updateData.description}
 
     const habit = await prisma.milestone.update({
       where: { id: params.id },
@@ -189,8 +187,8 @@ export async function PATCH(
       id: habit.id,
       title: habit.title,
       description: habit.description,
-      frequency: updateData.frequency || 'daily',
-      targetCount: updateData.targetCount || 1,
+  frequency: updateData?.frequency || 'daily',
+  targetCount: updateData?.targetCount || 1,
       currentStreak,
       bestStreak: currentStreak + Math.floor(Math.random() * 10),
       completedToday: false,
@@ -209,8 +207,8 @@ export async function PATCH(
 
 // DELETE /api/habits/[id] - Delete habit
 export async function DELETE(
-  request: NextRequest,
-  { params }: RouteParams
+  _request: NextRequest,
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()

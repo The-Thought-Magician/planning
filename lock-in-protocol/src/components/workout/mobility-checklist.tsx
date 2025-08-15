@@ -221,7 +221,7 @@ export function MobilityChecklist() {
   const [exerciseRunning, setExerciseRunning] = useState(false)
 
   useEffect(() => {
-    let interval: NodeJS.Timeout
+    let interval: ReturnType<typeof setInterval>
     if (exerciseRunning && exerciseTimeLeft > 0) {
       interval = setInterval(() => {
         setExerciseTimeLeft(prev => {
@@ -257,7 +257,7 @@ export function MobilityChecklist() {
   }
 
   const completeExercise = (exerciseId: string) => {
-    if (!sessionProgress) return
+    if (!sessionProgress) {return}
     
     const updatedProgress = {
       ...sessionProgress,
@@ -274,7 +274,7 @@ export function MobilityChecklist() {
   }
 
   const finishSession = () => {
-    if (!sessionProgress) return
+    if (!sessionProgress) {return}
     
     const updatedProgress = {
       ...sessionProgress,
@@ -294,7 +294,7 @@ export function MobilityChecklist() {
   }
 
   const getCompletionPercentage = () => {
-    if (!sessionProgress || !selectedRoutine) return 0
+    if (!sessionProgress || !selectedRoutine) {return 0}
     return (sessionProgress.completedExercises.length / selectedRoutine.exercises.length) * 100
   }
 

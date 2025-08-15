@@ -125,7 +125,7 @@ export function SupplementLogger() {
   }
 
   const getTimingStatus = (supplement: SupplementLog) => {
-    if (!supplement.completed || !supplement.actualTime) return 'pending'
+    if (!supplement.completed || !supplement.actualTime) {return 'pending'}
     
     const planned = new Date(`2000-01-01T${supplement.timing}:00`)
     const actual = new Date(`2000-01-01T${supplement.actualTime}:00`)
@@ -137,8 +137,8 @@ export function SupplementLogger() {
       window = 30 // Critical post-workout window
     }
     
-    if (diffMinutes <= window / 2) return 'on-time'
-    if (diffMinutes <= window) return 'acceptable'
+    if (diffMinutes <= window / 2) {return 'on-time'}
+    if (diffMinutes <= window) {return 'acceptable'}
     return 'late'
   }
 

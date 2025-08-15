@@ -47,9 +47,9 @@ const WEEKLY_TARGETS = [
 
 export function GoalComparison() {
   const getPerformanceStatus = (actual: number, planned: number, target: number) => {
-    if (actual >= target) return { status: 'excellent', color: 'text-green-600', icon: CheckCircle }
-    if (actual >= planned) return { status: 'good', color: 'text-blue-600', icon: TrendingUp }
-    if (actual >= planned * 0.8) return { status: 'needs-improvement', color: 'text-yellow-600', icon: AlertCircle }
+    if (actual >= target) {return { status: 'excellent', color: 'text-green-600', icon: CheckCircle }}
+    if (actual >= planned) {return { status: 'good', color: 'text-blue-600', icon: TrendingUp }}
+    if (actual >= planned * 0.8) {return { status: 'needs-improvement', color: 'text-yellow-600', icon: AlertCircle }}
     return { status: 'concerning', color: 'text-red-600', icon: AlertCircle }
   }
 

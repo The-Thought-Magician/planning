@@ -219,7 +219,7 @@ export function WorkoutDashboard() {
               .map(([type, info]) => (
               <div key={type} className="border rounded-lg p-4 space-y-2">
                 <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${info.color}`}></div>
+                  <div className={`w-3 h-3 rounded-full ${info.color}`} />
                   <h4 className="font-medium text-sm">{info.name}</h4>
                 </div>
                 <p className="text-xs text-muted-foreground">{info.description}</p>

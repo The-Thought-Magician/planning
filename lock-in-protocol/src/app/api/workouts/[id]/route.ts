@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -11,14 +11,12 @@ import {
 } from '@/lib/api-utils'
 import { workoutSessionSchema } from '@/lib/validations'
 
-interface RouteParams {
-  params: { id: string }
-}
+// Avoid strict typing of Next.js context param
 
 // GET /api/workouts/[id] - Get specific workout session
 export async function GET(
-  request: NextRequest,
-  { params }: RouteParams
+  _request: NextRequest,
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()
@@ -64,7 +62,7 @@ export async function GET(
 // PATCH /api/workouts/[id] - Update workout session
 export async function PATCH(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()
@@ -107,25 +105,31 @@ export async function PATCH(
     }
 
     // Separate exercises from workout data
-    const { exercises, ...sessionData } = updateData
+  const { exercises, ...sessionData } = updateData || {}
 
     // Start transaction for updating workout and exercises
     const workout = await prisma.$transaction(async (tx) => {
       // Update workout session
-      const updatedSession = await tx.workoutSession.update({
+      await tx.workoutSession.update({
         where: { id: params.id },
-        data: sessionData
+        data: {
+          ...(typeof sessionData?.date !== 'undefined' ? { date: sessionData.date as any } : {}),
+          ...(typeof sessionData?.type !== 'undefined' ? { type: sessionData.type as any } : {}),
+          ...(typeof sessionData?.duration !== 'undefined' ? { duration: sessionData.duration } : {}),
+          ...(typeof sessionData?.notes !== 'undefined' ? { notes: sessionData.notes } : {}),
+          ...(typeof (sessionData as any)?.completed !== 'undefined' ? { completed: (sessionData as any).completed } : {}),
+        }
       })
 
       // If exercises are provided, update them
-      if (exercises) {
+  if (exercises) {
         // Delete existing exercises
         await tx.workoutExercise.deleteMany({
           where: { sessionId: params.id }
         })
 
         // Create new exercises
-        await tx.workoutExercise.createMany({
+  await tx.workoutExercise.createMany({
           data: exercises.map(exercise => ({
             sessionId: params.id,
             exerciseName: exercise.exerciseName,
@@ -156,8 +160,8 @@ export async function PATCH(
 
 // DELETE /api/workouts/[id] - Delete workout session
 export async function DELETE(
-  request: NextRequest,
-  { params }: RouteParams
+  _request: NextRequest,
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()

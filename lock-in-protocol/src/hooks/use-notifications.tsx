@@ -241,9 +241,9 @@ export function useScheduleNotifications() {
   const scheduleActivityReminder = useCallback(async (
     activityName: string,
     activityTime: Date,
-    activityType: string = 'activity'
+    activityType = 'activity'
   ) => {
-    if (!preferences.scheduleReminders) return;
+    if (!preferences.scheduleReminders) {return;}
 
     const reminderTime = new Date(activityTime.getTime() - (preferences.reminderTime * 60 * 1000));
     
@@ -270,7 +270,7 @@ export function usePomodoroNotifications() {
     breakType: 'short' | 'long',
     breakTime: Date
   ) => {
-    if (!preferences.pomodoroBreaks) return;
+    if (!preferences.pomodoroBreaks) {return;}
 
     return scheduleNotification({
       title: 'Pomodoro Break Time',
@@ -295,7 +295,7 @@ export function useWorkoutNotifications() {
     workoutName: string,
     workoutTime: Date
   ) => {
-    if (!preferences.workoutReminders) return;
+    if (!preferences.workoutReminders) {return;}
 
     const reminderTime = new Date(workoutTime.getTime() - (preferences.reminderTime * 60 * 1000));
     
@@ -322,7 +322,7 @@ export function useNutritionNotifications() {
     mealName: string,
     mealTime: Date
   ) => {
-    if (!preferences.mealReminders) return;
+    if (!preferences.mealReminders) {return;}
 
     return scheduleNotification({
       title: 'Meal Time',
@@ -341,7 +341,7 @@ export function useNutritionNotifications() {
     supplementName: string,
     supplementTime: Date
   ) => {
-    if (!preferences.supplementReminders) return;
+    if (!preferences.supplementReminders) {return;}
 
     return scheduleNotification({
       title: 'Supplement Reminder',

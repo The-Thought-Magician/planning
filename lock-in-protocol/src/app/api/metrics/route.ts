@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
+import { DailyMetric } from '@prisma/client'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -59,8 +60,8 @@ export async function GET(request: NextRequest) {
       }
     } else if (startDate || endDate) {
       where.date = {}
-      if (startDate) where.date.gte = startDate
-      if (endDate) where.date.lte = endDate
+      if (startDate) {where.date.gte = startDate}
+      if (endDate) {where.date.lte = endDate}
     }
 
     // Get total count for pagination
@@ -130,7 +131,7 @@ export async function POST(request: NextRequest) {
       return createErrorResponse(API_ERRORS.NOT_FOUND, 404)
     }
 
-    const { data: metricData, error: validationError } = await validateRequestBody(
+  const { data: metricData, error: validationError } = await validateRequestBody(
       request,
       dailyMetricSchema
     )
@@ -139,7 +140,7 @@ export async function POST(request: NextRequest) {
       return createErrorResponse(validationError, 400)
     }
 
-    const { startOfDay, endOfDay } = getDateRange(metricData.date)
+  const { startOfDay, endOfDay } = getDateRange(metricData!.date)
 
     // Check if metric already exists for this date
     const existingMetric = await prisma.dailyMetric.findFirst({
@@ -158,15 +159,30 @@ export async function POST(request: NextRequest) {
       // Update existing metric
       metric = await prisma.dailyMetric.update({
         where: { id: existingMetric.id },
-        data: metricData
+        data: {
+          date: metricData!.date,
+          scheduleAdherence: metricData!.scheduleAdherence,
+          workoutCompleted: metricData!.workoutCompleted,
+          deepWorkHours: metricData!.deepWorkHours,
+          sleepQuality: metricData!.sleepQuality,
+          energyLevel: metricData!.energyLevel,
+          stressLevel: metricData!.stressLevel,
+          pomodoroCount: metricData!.pomodoroCount,
+        }
       })
     } else {
       // Create new metric
       metric = await prisma.dailyMetric.create({
         data: {
-          ...metricData,
           userId: dbUser.id,
-          date: startOfDay
+          date: startOfDay,
+          scheduleAdherence: metricData!.scheduleAdherence,
+          workoutCompleted: metricData!.workoutCompleted,
+          deepWorkHours: metricData!.deepWorkHours,
+          sleepQuality: metricData!.sleepQuality,
+          energyLevel: metricData!.energyLevel,
+          stressLevel: metricData!.stressLevel,
+          pomodoroCount: metricData!.pomodoroCount,
         }
       })
     }
@@ -190,7 +206,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Helper functions
-function calculateProductivityScore(metric: any): number {
+function calculateProductivityScore(metric: DailyMetric): number {
   let score = 0
   
   // Schedule adherence (40%)
@@ -212,7 +228,7 @@ function calculateProductivityScore(metric: any): number {
   return Math.round(score)
 }
 
-function calculateWellnessScore(metric: any): number {
+function calculateWellnessScore(metric: DailyMetric): number {
   let score = 0
   let factors = 0
   
@@ -233,7 +249,7 @@ function calculateWellnessScore(metric: any): number {
   }
   
   // Normalize score based on available factors
-  if (factors === 0) return 0
+  if (factors === 0) {return 0}
   return Math.round((score / factors) * 100)
 }
 

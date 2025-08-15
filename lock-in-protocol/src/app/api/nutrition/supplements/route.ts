@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -62,8 +62,8 @@ export async function GET(request: NextRequest) {
       }
     } else if (startDate || endDate) {
       where.date = {}
-      if (startDate) where.date.gte = startDate
-      if (endDate) where.date.lte = endDate
+      if (startDate) {where.date.gte = startDate}
+      if (endDate) {where.date.lte = endDate}
     }
 
     if (supplementType) {
@@ -128,9 +128,9 @@ export async function POST(request: NextRequest) {
     const existingSupplement = await prisma.supplementLog.findFirst({
       where: {
         userId: dbUser.id,
-        date: supplementData.date,
-        supplementType: supplementData.supplementType,
-        timing: supplementData.timing
+        date: supplementData!.date,
+        supplementType: supplementData!.supplementType,
+        timing: supplementData!.timing
       }
     })
 
@@ -144,7 +144,9 @@ export async function POST(request: NextRequest) {
     // Create supplement log
     const supplement = await prisma.supplementLog.create({
       data: {
-        ...supplementData,
+        date: supplementData!.date,
+        supplementType: supplementData!.supplementType,
+        timing: supplementData!.timing,
         userId: dbUser.id,
       }
     })

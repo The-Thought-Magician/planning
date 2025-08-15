@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -12,7 +12,7 @@ import {
 } from '@/lib/api-utils'
 
 // GET /api/analytics/dashboard - Get dashboard analytics data
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const { user, error } = await authenticateUser()
     
@@ -296,14 +296,16 @@ export async function GET(request: NextRequest) {
 }
 
 // Helper functions
-function calculateNutritionScore(meals: any[], supplements: any[]): number {
-  const mealScore = meals.filter(m => m.completed).length * 20
+function calculateNutritionScore(meals: Record<string, unknown>[], supplements: Record<string, unknown>[]): number {
+  const mealScore = meals.filter((m) => {
+    return m.completed
+  }).length * 20
   const supplementScore = supplements.filter(s => s.completed).length * 10
   return Math.min(mealScore + supplementScore, 100)
 }
 
-function calculateWorkoutConsistency(metrics: any[]): number {
-  if (metrics.length === 0) return 0
+function calculateWorkoutConsistency(metrics: Record<string, unknown>[]): number {
+  if (metrics.length === 0) {return 0}
   const workoutDays = metrics.filter(m => m.workoutCompleted).length
   return (workoutDays / metrics.length) * 100
 }
@@ -333,12 +335,12 @@ async function calculateCompletionRate(userId: string, type: string): Promise<nu
   return total > 0 ? (completed / total) * 100 : 0
 }
 
-function generateInsights(metrics: any[], timeBlocks: any[], workouts: any[]): string[] {
+function generateInsights(metrics: Record<string, unknown>[], _timeBlocks: Record<string, unknown>[], workouts: Record<string, unknown>[]): string[] {
   const insights: string[] = []
   
   // Schedule adherence insights
   const avgAdherence = metrics.length > 0 
-    ? metrics.reduce((sum, m) => sum + m.scheduleAdherence, 0) / metrics.length 
+    ? metrics.reduce((sum, m) => sum + (m.scheduleAdherence as number), 0) / metrics.length 
     : 0
   
   if (avgAdherence > 0.8) {
@@ -361,7 +363,7 @@ function generateInsights(metrics: any[], timeBlocks: any[], workouts: any[]): s
   
   // Deep work insights
   const avgDeepWork = metrics.length > 0 
-    ? metrics.reduce((sum, m) => sum + m.deepWorkHours, 0) / metrics.length 
+    ? metrics.reduce((sum, m) => sum + (m.deepWorkHours as number), 0) / metrics.length 
     : 0
   
   if (avgDeepWork > 6) {

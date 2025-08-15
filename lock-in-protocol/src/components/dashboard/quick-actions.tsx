@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { 
   Dumbbell, 
   UtensilsCrossed, 
-  NotebookPen, 
+ 
   Timer,
   Plus,
   CheckCircle,
@@ -15,9 +15,60 @@ import {
   Droplets
 } from 'lucide-react'
 import Link from 'next/link'
-import { useTodaysTimeBlocks, useQuickWorkoutLog, useQuickMealLog, useQuickHydrationLog, useUpdateTimeBlock } from '@/hooks/api/use-dashboard'
+import { useTimeBlocks, useQuickWorkout, useQuickMeal } from '@/hooks/use-dashboard'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '@/lib/api'
 import { toast } from 'sonner'
 import { useState } from 'react'
+
+// Minimal shape used by this component
+interface UITimeBlock {
+  id: string
+  title: string
+  startTime: string | Date
+  endTime: string | Date
+  category: string
+  completed: boolean
+}
+
+export function QuickActions() {
+  const [isLoading, setIsLoading] = useState<string | null>(null)
+  
+  const today = new Date().toISOString().split('T')[0]
+  const { data: timeBlocksResponse, isLoading: timeBlocksLoading } = useTimeBlocks(today)
+  const workoutMutation = useQuickWorkout()
+  const mealMutation = useQuickMeal()
+  
+  const queryClient = useQueryClient()
+  const hydrationMutation = useMutation({
+    mutationFn: (data: Record<string, unknown>) => api.createMeal(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['nutrition'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+  
+  const updateTimeBlockMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => 
+      api.updateTimeBlock(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['time-blocks'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+
+  const timeBlocks: UITimeBlock[] = timeBlocksResponse?.success
+    ? ((timeBlocksResponse.data as unknown as UITimeBlock[]) || [])
+    : []
+  const upcomingTasks = getUpcomingTasks(timeBlocks)
+  
+  // Find current active time block
+  const currentTimeBlock = timeBlocks.find((block) => {
+    const now = new Date()
+    const startTime = new Date(block.startTime as any)
+    const endTime = new Date(block.endTime as any)
+    return now >= startTime && now <= endTime && !block.completed
+  })
 
   const quickActions = [
     {
@@ -71,58 +122,6 @@ import { useState } from 'react'
     },
   ]
 
-// Helper function to get upcoming tasks from time blocks
-function getUpcomingTasks(timeBlocks: any[]): Array<{
-  id: string;
-  title: string;
-  time: string;
-  category: string;
-  priority: 'high' | 'medium' | 'low';
-}> {
-  const currentTime = new Date()
-  const today = new Date().toDateString()
-  
-  return timeBlocks
-    .filter(block => {
-      const blockDate = new Date(block.startTime).toDateString()
-      const blockTime = new Date(block.startTime)
-      return blockDate === today && blockTime > currentTime && !block.completed
-    })
-    .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
-    .slice(0, 3)
-    .map(block => ({
-      id: block.id,
-      title: block.title,
-      time: new Date(block.startTime).toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      }),
-      category: block.category.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase()),
-      priority: block.category.includes('WORKOUT') || block.category.includes('DEEP_WORK') ? 'high' as const : 'medium' as const
-    }))
-}
-
-export function QuickActions() {
-  const [isLoading, setIsLoading] = useState<string | null>(null)
-  
-  const { data: timeBlocksResponse, isLoading: timeBlocksLoading } = useTodaysTimeBlocks()
-  const workoutMutation = useQuickWorkoutLog()
-  const mealMutation = useQuickMealLog()
-  const hydrationMutation = useQuickHydrationLog()
-  const updateTimeBlockMutation = useUpdateTimeBlock()
-
-  const timeBlocks = timeBlocksResponse?.success ? timeBlocksResponse.data || [] : []
-  const upcomingTasks = getUpcomingTasks(timeBlocks)
-  
-  // Find current active time block
-  const currentTimeBlock = timeBlocks.find((block: any) => {
-    const now = new Date()
-    const startTime = new Date(block.startTime)
-    const endTime = new Date(block.endTime)
-    return now >= startTime && now <= endTime && !block.completed
-  })
-
   const handleAction = async (actionType: string) => {
     setIsLoading(actionType)
     
@@ -130,7 +129,6 @@ export function QuickActions() {
       switch (actionType) {
         case 'start-timer':
           toast.info('Pomodoro timer would start here')
-          // TODO: Integrate with pomodoro timer component
           break
           
         case 'log-workout':
@@ -140,7 +138,6 @@ export function QuickActions() {
             completed: true,
             exercises: []
           })
-          toast.success('Workout logged successfully!')
           break
           
         case 'track-meal':
@@ -150,20 +147,13 @@ export function QuickActions() {
             completed: true,
             notes: 'Quick meal log'
           })
-          toast.success('Meal tracked successfully!')
           break
           
         case 'log-hydration':
           await hydrationMutation.mutateAsync({
             date: new Date(),
-            waterIntake: 250 // 250ml quick log
+            waterIntake: 250
           })
-          toast.success('Hydration logged! (+250ml)')
-          break
-          
-        case 'add-note':
-          toast.info('Notes interface would open here')
-          // TODO: Open note-taking modal
           break
           
         case 'complete-current':
@@ -181,8 +171,9 @@ export function QuickActions() {
         default:
           console.log('Unknown action:', actionType)
       }
-    } catch (error: any) {
-      toast.error(`Action failed: ${error.message}`)
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      toast.error(`Action failed: ${message}`)
     } finally {
       setIsLoading(null)
     }
@@ -318,3 +309,39 @@ export function QuickActions() {
     </div>
   )
 }
+
+// Helper function to get upcoming tasks from time blocks
+function getUpcomingTasks(timeBlocks: UITimeBlock[]): Array<{
+  id: string;
+  title: string;
+  time: string;
+  category: string;
+  priority: 'high' | 'medium' | 'low';
+}> {
+  const currentTime = new Date()
+  const today = new Date().toDateString()
+  
+  return timeBlocks
+    .filter(block => {
+      const blockDate = new Date(block.startTime as any).toDateString()
+      const blockTime = new Date(block.startTime as any)
+      return blockDate === today && blockTime > currentTime && !block.completed
+    })
+    .sort((a, b) => new Date(a.startTime as any).getTime() - new Date(b.startTime as any).getTime())
+    .slice(0, 3)
+    .map(block => ({
+      id: String(block.id),
+      title: String(block.title),
+      time: new Date(block.startTime as any).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      }),
+      category: String(block.category)
+        .replace(/_/g, ' ')
+        .toLowerCase()
+        .replace(/\b\w/g, (l: string) => l.toUpperCase()),
+      priority: block.category.includes('WORKOUT') || block.category.includes('DEEP_WORK') ? 'high' as const : 'medium' as const
+    }))
+}
+

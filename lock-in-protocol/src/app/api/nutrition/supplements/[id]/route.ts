@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -11,14 +11,53 @@ import {
 } from '@/lib/api-utils'
 import { supplementLogSchema } from '@/lib/validations'
 
-interface RouteParams {
-  params: { id: string }
+// Avoid strict typing of Next.js context param
+
+// GET /api/nutrition/supplements/[id] - Get specific supplement log
+export async function GET(
+  _request: NextRequest,
+  { params }: any
+) {
+  try {
+    const { user, error } = await authenticateUser()
+    
+    if (error || !user) {
+      return createErrorResponse(API_ERRORS.UNAUTHORIZED, 401)
+    }
+
+    // Find user in database
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user.email! }
+    })
+
+    if (!dbUser) {
+      return createErrorResponse(API_ERRORS.NOT_FOUND, 404)
+    }
+
+    // Get supplement log
+    const supplement = await prisma.supplementLog.findFirst({
+      where: {
+        id: params.id,
+        userId: dbUser.id
+      }
+    })
+
+    if (!supplement) {
+      return createErrorResponse(API_ERRORS.NOT_FOUND, 404)
+    }
+
+    return createSuccessResponse(supplement)
+
+  } catch (error) {
+    console.error('Get supplement error:', error)
+    return createErrorResponse(API_ERRORS.INTERNAL_ERROR)
+  }
 }
 
 // PATCH /api/nutrition/supplements/[id] - Update supplement log
 export async function PATCH(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()
@@ -58,10 +97,10 @@ export async function PATCH(
     }
 
     // If updating date, type, or timing, check for conflicts
-    if (updateData.date || updateData.supplementType || updateData.timing) {
-      const date = updateData.date || existingSupplement.date
-      const supplementType = updateData.supplementType || existingSupplement.supplementType
-      const timing = updateData.timing || existingSupplement.timing
+    if (updateData?.date || updateData?.supplementType || updateData?.timing) {
+      const date = updateData?.date || existingSupplement.date
+      const supplementType = updateData?.supplementType || existingSupplement.supplementType
+      const timing = updateData?.timing || existingSupplement.timing
 
       const conflictingSupplement = await prisma.supplementLog.findFirst({
         where: {
@@ -84,7 +123,11 @@ export async function PATCH(
     // Update supplement log
     const supplement = await prisma.supplementLog.update({
       where: { id: params.id },
-      data: updateData
+      data: {
+        ...(typeof updateData?.date !== 'undefined' ? { date: updateData.date as any } : {}),
+        ...(typeof updateData?.supplementType !== 'undefined' ? { supplementType: updateData.supplementType as any } : {}),
+        ...(typeof updateData?.timing !== 'undefined' ? { timing: updateData.timing } : {}),
+      }
     })
 
     return createSuccessResponse(supplement, 'Supplement log updated successfully')
@@ -97,8 +140,8 @@ export async function PATCH(
 
 // DELETE /api/nutrition/supplements/[id] - Delete supplement log
 export async function DELETE(
-  request: NextRequest,
-  { params }: RouteParams
+  _request: NextRequest,
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()
@@ -148,14 +191,11 @@ export async function OPTIONS() {
   return handleOptions()
 }
 
-export async function GET() {
-  return methodNotAllowed(['PATCH', 'DELETE'])
-}
 
 export async function POST() {
-  return methodNotAllowed(['PATCH', 'DELETE'])
+  return methodNotAllowed(['GET', 'PATCH', 'DELETE'])
 }
 
 export async function PUT() {
-  return methodNotAllowed(['PATCH', 'DELETE'])
+  return methodNotAllowed(['GET', 'PATCH', 'DELETE'])
 }

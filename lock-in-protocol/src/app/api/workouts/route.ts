@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -9,7 +9,6 @@ import {
   methodNotAllowed,
   handleOptions,
   getQueryParams,
-  getDateRange,
   API_ERRORS
 } from '@/lib/api-utils'
 import { workoutSessionSchema } from '@/lib/validations'
@@ -49,8 +48,8 @@ export async function GET(request: NextRequest) {
     // Date filtering
     if (startDate || endDate) {
       where.date = {}
-      if (startDate) where.date.gte = startDate
-      if (endDate) where.date.lte = endDate
+      if (startDate) {where.date.gte = startDate}
+      if (endDate) {where.date.lte = endDate}
     }
 
     // Get query parameters for filtering
@@ -115,6 +114,10 @@ export async function POST(request: NextRequest) {
 
     if (validationError) {
       return createErrorResponse(validationError, 400)
+    }
+
+    if (!workoutData) {
+      return createErrorResponse(API_ERRORS.VALIDATION_ERROR, 400)
     }
 
     // Check if workout already exists for this date and type

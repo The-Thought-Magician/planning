@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
@@ -141,9 +141,9 @@ export function MilestoneProgress() {
   const overallProgress = (completedGoals / totalGoals) * 100
 
   const getStatusColor = (progress: number) => {
-    if (progress >= 80) return 'text-green-600'
-    if (progress >= 60) return 'text-blue-600'
-    if (progress >= 40) return 'text-yellow-600'
+    if (progress >= 80) {return 'text-green-600'}
+    if (progress >= 60) {return 'text-blue-600'}
+    if (progress >= 40) {return 'text-yellow-600'}
     return 'text-red-600'
   }
 

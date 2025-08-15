@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -11,14 +11,12 @@ import {
 } from '@/lib/api-utils'
 import { milestoneSchema } from '@/lib/validations'
 
-interface RouteParams {
-  params: { id: string }
-}
+// Avoid strict typing of Next.js context param
 
 // GET /api/milestones/[id] - Get specific milestone
 export async function GET(
-  request: NextRequest,
-  { params }: RouteParams
+  _request: NextRequest,
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()
@@ -69,7 +67,7 @@ export async function GET(
 // PATCH /api/milestones/[id] - Update milestone
 export async function PATCH(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()
@@ -109,14 +107,21 @@ export async function PATCH(
     }
 
     // Auto-complete milestone if progress reaches 100%
-    if (updateData.progress === 100 && !updateData.hasOwnProperty('completed')) {
-      updateData.completed = true
+    if (updateData?.progress === 100 && updateData && !Object.prototype.hasOwnProperty.call(updateData, 'completed')) {
+      ;(updateData as any).completed = true
     }
 
     // Update milestone
     const milestone = await prisma.milestone.update({
       where: { id: params.id },
-      data: updateData
+      data: {
+        ...(typeof updateData?.title !== 'undefined' ? { title: updateData.title } : {}),
+        ...(typeof updateData?.description !== 'undefined' ? { description: updateData.description } : {}),
+        ...(typeof updateData?.targetDate !== 'undefined' ? { targetDate: updateData.targetDate as any } : {}),
+        ...(typeof updateData?.progress !== 'undefined' ? { progress: updateData.progress } : {}),
+        ...(typeof updateData?.category !== 'undefined' ? { category: updateData.category as any } : {}),
+        ...(typeof (updateData as any)?.completed !== 'undefined' ? { completed: (updateData as any).completed } : {}),
+      }
     })
 
     // Add computed fields
@@ -139,8 +144,8 @@ export async function PATCH(
 
 // DELETE /api/milestones/[id] - Delete milestone
 export async function DELETE(
-  request: NextRequest,
-  { params }: RouteParams
+  _request: NextRequest,
+  { params }: any
 ) {
   try {
     const { user, error } = await authenticateUser()

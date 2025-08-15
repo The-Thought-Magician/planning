@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { CheckCircle, Clock, Flame, Target, Zap, Droplet, AlertCircle } from 'lucide-react'
-import { useTodaysMetrics, useDashboardData } from '@/hooks/api/use-dashboard'
+import { useDailyMetrics, useDashboardData } from '@/hooks/use-dashboard'
 import { toast } from 'sonner'
 
 // Helper functions
@@ -15,11 +15,16 @@ function createProgressMetrics(metrics: any, dashboardData: any) {
   const targetPomodoroCount = 12
   const targetHydrationLevel = 3.0
 
+  const scheduleAdherence = typeof metrics?.scheduleAdherence === 'number' ? metrics.scheduleAdherence : 0
+  const deepWorkHours = typeof metrics?.deepWorkHours === 'number' ? metrics.deepWorkHours : 0
+  const pomodoroCount = typeof metrics?.pomodoroCount === 'number' ? metrics.pomodoroCount : 0
+  const hydration = typeof dashboardData?.today?.hydration === 'number' ? dashboardData.today.hydration : 0
+
   return [
     {
       id: 'schedule',
       label: 'Schedule Adherence',
-      value: metrics?.scheduleAdherence || 0,
+      value: scheduleAdherence,
       target: 100,
       icon: Clock,
       color: 'bg-blue-500',
@@ -29,53 +34,55 @@ function createProgressMetrics(metrics: any, dashboardData: any) {
     {
       id: 'deepwork',
       label: 'Deep Work',
-      value: metrics?.deepWorkHours ? (metrics.deepWorkHours / targetDeepWorkHours) * 100 : 0,
+      value: deepWorkHours ? (deepWorkHours / targetDeepWorkHours) * 100 : 0,
       target: 100,
       icon: Target,
       color: 'bg-purple-500',
-      unit: `${metrics?.deepWorkHours || 0}h / ${targetDeepWorkHours}h`,
+      unit: `${deepWorkHours}h / ${targetDeepWorkHours}h`,
       description: 'Focused work sessions',
     },
     {
       id: 'pomodoro',
       label: 'Pomodoro Sessions',
-      value: metrics?.pomodoroCount ? (metrics.pomodoroCount / targetPomodoroCount) * 100 : 0,
+      value: pomodoroCount ? (pomodoroCount / targetPomodoroCount) * 100 : 0,
       target: 100,
       icon: Flame,
       color: 'bg-orange-500',
-      unit: `${metrics?.pomodoroCount || 0} / ${targetPomodoroCount}`,
+      unit: `${pomodoroCount} / ${targetPomodoroCount}`,
       description: '25-minute focus blocks',
     },
     {
       id: 'hydration',
       label: 'Hydration',
-      value: dashboardData?.today?.hydration ? (dashboardData.today.hydration / targetHydrationLevel) * 100 : 0,
+      value: hydration ? (hydration / targetHydrationLevel) * 100 : 0,
       target: 100,
       icon: Droplet,
       color: 'bg-cyan-500',
-      unit: `${dashboardData?.today?.hydration || 0}L / ${targetHydrationLevel}L`,
+      unit: `${hydration}L / ${targetHydrationLevel}L`,
       description: 'Water intake today',
     },
   ]
 }
 
 function createWellnessMetrics(metrics: any) {
+  const energyLevel = typeof metrics?.energyLevel === 'number' ? metrics.energyLevel : 0
+  const stressLevel = typeof metrics?.stressLevel === 'number' ? metrics.stressLevel : 0
   return [
     {
       label: 'Energy Level',
-      value: metrics?.energyLevel || 0,
+      value: energyLevel,
       max: 10,
       icon: Zap,
       color: 'text-yellow-500',
-      status: (metrics?.energyLevel || 0) >= 7 ? 'good' : (metrics?.energyLevel || 0) >= 5 ? 'okay' : 'low',
+      status: energyLevel >= 7 ? 'good' : energyLevel >= 5 ? 'okay' : 'low',
     },
     {
       label: 'Stress Level',
-      value: metrics?.stressLevel || 0,
+      value: stressLevel,
       max: 10,
       icon: Target,
       color: 'text-red-500',
-      status: (metrics?.stressLevel || 0) <= 3 ? 'good' : (metrics?.stressLevel || 0) <= 6 ? 'okay' : 'high',
+      status: stressLevel <= 3 ? 'good' : stressLevel <= 6 ? 'okay' : 'high',
       inverted: true, // Lower is better for stress
     },
   ]
@@ -86,7 +93,7 @@ export function DailyProgress() {
     data: metricsResponse,
     isLoading: metricsLoading,
     error: metricsError,
-  } = useTodaysMetrics()
+  } = useDailyMetrics()
 
   const {
     data: dashboardResponse,
@@ -102,8 +109,8 @@ export function DailyProgress() {
     toast.error(`Failed to load progress data: ${error.message}`)
   }
 
-  const todayMetrics = metricsResponse?.success ? metricsResponse.data?.[0] : null
-  const dashboardData = dashboardResponse?.success ? dashboardResponse.data : null
+  const todayMetrics = metricsResponse?.success ? (metricsResponse.data as any[])?.[0] : null
+  const dashboardData = dashboardResponse?.success ? (dashboardResponse.data as any) : null
   
   const progressMetrics = createProgressMetrics(todayMetrics, dashboardData)
   const wellnessMetrics = createWellnessMetrics(todayMetrics)
@@ -291,7 +298,7 @@ function DailyProgressError({ error }: { error: string }) {
           <span>Error Loading Progress</span>
         </CardTitle>
         <CardDescription>
-          Unable to load today's progress data
+          Unable to load today&apos;s progress data
         </CardDescription>
       </CardHeader>
       

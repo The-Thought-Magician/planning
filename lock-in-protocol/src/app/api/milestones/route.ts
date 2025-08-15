@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -132,7 +132,11 @@ export async function POST(request: NextRequest) {
     // Create milestone
     const milestone = await prisma.milestone.create({
       data: {
-        ...milestoneData,
+        category: milestoneData!.category,
+        title: milestoneData!.title,
+        description: milestoneData!.description,
+        targetDate: milestoneData!.targetDate,
+        progress: milestoneData!.progress,
         userId: dbUser.id,
       }
     })

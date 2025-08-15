@@ -60,7 +60,7 @@ export function WeeklyReview() {
   )
 
   const addItem = (category: keyof Pick<WeeklyReview, 'workedWell' | 'challenges' | 'improvements'>, item: string) => {
-    if (!item.trim()) return
+    if (!item.trim()) {return}
     setNewReview(prev => ({
       ...prev,
       [category]: [...(prev[category] || []), item.trim()]
@@ -75,7 +75,7 @@ export function WeeklyReview() {
   }
 
   const saveReview = () => {
-    if (!newReview.overallRating) return
+    if (!newReview.overallRating) {return}
     
     const review: WeeklyReview = {
       id: Date.now().toString(),
@@ -99,16 +99,16 @@ export function WeeklyReview() {
   }
 
   const getRatingColor = (rating: number) => {
-    if (rating >= 8) return 'text-green-600'
-    if (rating >= 6) return 'text-blue-600'
-    if (rating >= 4) return 'text-yellow-600'
+    if (rating >= 8) {return 'text-green-600'}
+    if (rating >= 6) {return 'text-blue-600'}
+    if (rating >= 4) {return 'text-yellow-600'}
     return 'text-red-600'
   }
 
   const getRatingText = (rating: number) => {
-    if (rating >= 8) return 'Excellent'
-    if (rating >= 6) return 'Good'
-    if (rating >= 4) return 'Average'
+    if (rating >= 8) {return 'Excellent'}
+    if (rating >= 6) {return 'Good'}
+    if (rating >= 4) {return 'Average'}
     return 'Needs Improvement'
   }
 
