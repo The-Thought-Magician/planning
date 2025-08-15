@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Label } from '@/components/ui/label'
-import { Wand2, Target, Calendar, ArrowRight, CheckCircle } from 'lucide-react'
+import { Wand2, ArrowRight, CheckCircle } from 'lucide-react'
 import { MilestoneCategory } from '@prisma/client'
 
 interface GoalWizardStep {
@@ -87,12 +87,15 @@ export function GoalWizard() {
   })
   const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null)
 
-  const updateGoalData = (field: keyof GoalFormData, value: any) => {
+  const updateGoalData = (
+    field: keyof GoalFormData,
+    value: GoalFormData[keyof GoalFormData]
+  ) => {
     setGoalData(prev => ({ ...prev, [field]: value }))
   }
 
   const addListItem = (field: keyof Pick<GoalFormData, 'success_criteria' | 'obstacles' | 'resources' | 'steps'>, item: string) => {
-    if (!item.trim()) return
+    if (!item.trim()) {return}
     setGoalData(prev => ({
       ...prev,
       [field]: [...(prev[field] as string[]), item.trim()]
@@ -296,7 +299,7 @@ export function GoalWizard() {
               <div>
                 <Label>Success Criteria</Label>
                 <p className="text-sm text-muted-foreground mb-2">
-                  How will you know when you've achieved this goal?
+                  How will you know when you&apos;ve achieved this goal?
                 </p>
                 <div className="space-y-2">
                   {goalData.success_criteria.map((criterion, index) => (

@@ -7,8 +7,8 @@ import { authService } from './supabase'
 interface AuthContextType {
   user: User | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ data: any; error: any }>
-  signOut: () => Promise<{ error: any }>
+  signIn: (email: string, password: string) => Promise<{ data: { user: User | null } | null; error: { message: string } | null }>
+  signOut: () => Promise<{ error: { message: string } | null }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -30,7 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = authService.onAuthStateChange(
       async (event, session) => {
-        setUser(session?.user ?? null)
+        setUser(session?.user as User | null)
         setLoading(false)
       }
     )

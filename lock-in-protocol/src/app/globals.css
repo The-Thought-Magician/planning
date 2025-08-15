@@ -1,67 +1,66 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-  }
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #0f0f23;
+  --color-card: #ffffff;
+  --color-card-foreground: #0f0f23;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0f0f23;
+  --color-primary: #1f2937;
+  --color-primary-foreground: #f9fafb;
+  --color-secondary: #f3f4f6;
+  --color-secondary-foreground: #1f2937;
+  --color-muted: #f3f4f6;
+  --color-muted-foreground: #6b7280;
+  --color-accent: #f3f4f6;
+  --color-accent-foreground: #1f2937;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #f9fafb;
+  --color-border: #e5e7eb;
+  --color-input: #e5e7eb;
+  --color-ring: #1f2937;
+  --color-chart-1: #f97316;
+  --color-chart-2: #06b6d4;
+  --color-chart-3: #3b82f6;
+  --color-chart-4: #eab308;
+  --color-chart-5: #f43f5e;
+  --radius: 0.5rem;
+}
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
+.dark {
+  --color-background: #0f0f23;
+  --color-foreground: #f9fafb;
+  --color-card: #0f0f23;
+  --color-card-foreground: #f9fafb;
+  --color-popover: #0f0f23;
+  --color-popover-foreground: #f9fafb;
+  --color-primary: #f9fafb;
+  --color-primary-foreground: #1f2937;
+  --color-secondary: #1f2937;
+  --color-secondary-foreground: #f9fafb;
+  --color-muted: #1f2937;
+  --color-muted-foreground: #9ca3af;
+  --color-accent: #1f2937;
+  --color-accent-foreground: #f9fafb;
+  --color-destructive: #7f1d1d;
+  --color-destructive-foreground: #f9fafb;
+  --color-border: #374151;
+  --color-input: #374151;
+  --color-ring: #d1d5db;
+  --color-chart-1: #ea580c;
+  --color-chart-2: #0891b2;
+  --color-chart-3: #1d4ed8;
+  --color-chart-4: #ca8a04;
+  --color-chart-5: #dc2626;
 }
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: theme('colors.border');
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: theme('colors.background');
+    color: theme('colors.foreground');
   }
 }

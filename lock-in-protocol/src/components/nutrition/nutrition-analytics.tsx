@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
-import { TrendingUp, TrendingDown, Calendar, Target, Droplets, Utensils, Pill, Award } from 'lucide-react'
-import { format, subDays, startOfWeek, endOfWeek } from 'date-fns'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
+import { TrendingUp, TrendingDown, Target, Droplets, Utensils, Pill, Award } from 'lucide-react'
+import { format } from 'date-fns'
 
 interface NutritionMetric {
   date: string
@@ -54,7 +54,7 @@ const SUPPLEMENT_DISTRIBUTION_DATA = [
 ]
 
 export function NutritionAnalytics() {
-  const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('week')
+  // const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('week')
   const [weeklyData] = useState<NutritionMetric[]>(MOCK_WEEKLY_DATA)
 
   const calculateWeeklySummary = (): WeeklySummary => {
@@ -68,9 +68,9 @@ export function NutritionAnalytics() {
     )
     
     let improvementArea = 'meal_timing'
-    if (avgMealAdherence < 85) improvementArea = 'meal_adherence'
-    else if (avgSupplementAdherence < 85) improvementArea = 'supplement_adherence'
-    else if (avgHydration < 3.0) improvementArea = 'hydration'
+    if (avgMealAdherence < 85) {improvementArea = 'meal_adherence'}
+    else if (avgSupplementAdherence < 85) {improvementArea = 'supplement_adherence'}
+    else if (avgHydration < 3.0) {improvementArea = 'hydration'}
     
     return {
       period: 'This Week',
@@ -87,15 +87,15 @@ export function NutritionAnalytics() {
   const overallScore = (summary.mealCompletionRate + summary.supplementCompletionRate + (summary.averageHydration / 3.0 * 100)) / 3
 
   const getTrendIcon = (current: number, previous: number) => {
-    if (current > previous) return <TrendingUp className="h-4 w-4 text-green-500" />
-    if (current < previous) return <TrendingDown className="h-4 w-4 text-red-500" />
+    if (current > previous) {return <TrendingUp className="h-4 w-4 text-green-500" />}
+    if (current < previous) {return <TrendingDown className="h-4 w-4 text-red-500" />}
     return <span className="text-muted-foreground">-</span>
   }
 
   const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-green-600'
-    if (score >= 75) return 'text-blue-600'
-    if (score >= 60) return 'text-yellow-600'
+    if (score >= 90) {return 'text-green-600'}
+    if (score >= 75) {return 'text-blue-600'}
+    if (score >= 60) {return 'text-yellow-600'}
     return 'text-red-600'
   }
 
@@ -446,7 +446,7 @@ export function NutritionAnalytics() {
                       <h4 className="font-medium text-green-800">Excellent Performance!</h4>
                     </div>
                     <p className="text-sm text-green-700">
-                      You're maintaining excellent nutrition habits. Consider tracking more detailed metrics like meal macronutrients or supplement timing precision.
+                      You&apos;re maintaining excellent nutrition habits. Consider tracking more detailed metrics like meal macronutrients or supplement timing precision.
                     </p>
                   </div>
                 )}

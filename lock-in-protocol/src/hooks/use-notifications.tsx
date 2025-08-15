@@ -158,7 +158,6 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             icon: '/icons/icon-192x192.png',
             badge: '/icons/icon-72x72.png',
             tag: notification.tag,
-            vibrate: preferences.vibrationEnabled ? [100, 50, 100] : undefined,
             silent: !preferences.soundEnabled
           });
         }, delay);
@@ -242,18 +241,18 @@ export function useScheduleNotifications() {
   const scheduleActivityReminder = useCallback(async (
     activityName: string,
     activityTime: Date,
-    activityType: string = 'activity'
+    activityType = 'activity'
   ) => {
-    if (!preferences.scheduleReminders) return;
+    if (!preferences.scheduleReminders) {return;}
 
     const reminderTime = new Date(activityTime.getTime() - (preferences.reminderTime * 60 * 1000));
     
     return scheduleNotification({
       title: 'Upcoming Activity',
-      message: `${activityName} starts in ${preferences.reminderTime} minutes`,
+      message: `${activityName} (${activityType}) starts in ${preferences.reminderTime} minutes`,
       scheduledTime: reminderTime,
       type: NotificationType.SCHEDULE_REMINDER,
-      tag: `activity-reminder-${activityTime.getTime()}`,
+      tag: `activity-reminder-${activityType}-${activityTime.getTime()}`,
       actions: [
         { action: 'view', title: 'View Schedule' },
         { action: 'snooze', title: 'Remind in 5 min' }
@@ -271,7 +270,7 @@ export function usePomodoroNotifications() {
     breakType: 'short' | 'long',
     breakTime: Date
   ) => {
-    if (!preferences.pomodoroBreaks) return;
+    if (!preferences.pomodoroBreaks) {return;}
 
     return scheduleNotification({
       title: 'Pomodoro Break Time',
@@ -296,7 +295,7 @@ export function useWorkoutNotifications() {
     workoutName: string,
     workoutTime: Date
   ) => {
-    if (!preferences.workoutReminders) return;
+    if (!preferences.workoutReminders) {return;}
 
     const reminderTime = new Date(workoutTime.getTime() - (preferences.reminderTime * 60 * 1000));
     
@@ -323,11 +322,11 @@ export function useNutritionNotifications() {
     mealName: string,
     mealTime: Date
   ) => {
-    if (!preferences.mealReminders) return;
+    if (!preferences.mealReminders) {return;}
 
     return scheduleNotification({
       title: 'Meal Time',
-      message: `Time for ${mealName}! Don't forget to log your meal.`,
+  message: `Time for ${mealName}! Do not forget to log your meal.`,
       scheduledTime: mealTime,
       type: NotificationType.MEAL_REMINDER,
       tag: `meal-reminder-${mealTime.getTime()}`,
@@ -342,7 +341,7 @@ export function useNutritionNotifications() {
     supplementName: string,
     supplementTime: Date
   ) => {
-    if (!preferences.supplementReminders) return;
+    if (!preferences.supplementReminders) {return;}
 
     return scheduleNotification({
       title: 'Supplement Reminder',

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Play, Pause, Square, RotateCcw, Settings, Timer } from 'lucide-react'
+import { Play, Pause, Square, RotateCcw, Timer } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface TimerSettings {
@@ -75,8 +75,8 @@ export function HiitTimer() {
   const [isFinished, setIsFinished] = useState(false)
   const [currentExercise, setCurrentExercise] = useState('')
   
-  const audioRef = useRef<HTMLAudioElement | null>(null)
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  // const audioRef = useRef<HTMLAudioElement | null>(null)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
     if (isRunning && !isPaused && !isFinished) {

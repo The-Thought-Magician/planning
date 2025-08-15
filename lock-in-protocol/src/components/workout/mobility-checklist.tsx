@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Textarea } from '@/components/ui/textarea'
-import { Clock, CheckCircle, Sunrise, Moon, Target, Timer } from 'lucide-react'
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+// import { Textarea } from '@/components/ui/textarea'
+import { CheckCircle, Sunrise, Moon, Target, Timer } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface MobilityExercise {
@@ -221,7 +221,7 @@ export function MobilityChecklist() {
   const [exerciseRunning, setExerciseRunning] = useState(false)
 
   useEffect(() => {
-    let interval: NodeJS.Timeout
+    let interval: ReturnType<typeof setInterval>
     if (exerciseRunning && exerciseTimeLeft > 0) {
       interval = setInterval(() => {
         setExerciseTimeLeft(prev => {
@@ -257,7 +257,7 @@ export function MobilityChecklist() {
   }
 
   const completeExercise = (exerciseId: string) => {
-    if (!sessionProgress) return
+    if (!sessionProgress) {return}
     
     const updatedProgress = {
       ...sessionProgress,
@@ -274,7 +274,7 @@ export function MobilityChecklist() {
   }
 
   const finishSession = () => {
-    if (!sessionProgress) return
+    if (!sessionProgress) {return}
     
     const updatedProgress = {
       ...sessionProgress,
@@ -294,7 +294,7 @@ export function MobilityChecklist() {
   }
 
   const getCompletionPercentage = () => {
-    if (!sessionProgress || !selectedRoutine) return 0
+    if (!sessionProgress || !selectedRoutine) {return 0}
     return (sessionProgress.completedExercises.length / selectedRoutine.exercises.length) * 100
   }
 
@@ -438,7 +438,7 @@ export function MobilityChecklist() {
                   <div className="flex items-center gap-3">
                     <Checkbox 
                       checked={sessionProgress?.completedExercises.includes(exercise.id) || false}
-                      readOnly
+                      disabled
                     />
                     <div>
                       <p className="font-medium">{exercise.name}</p>
@@ -536,10 +536,10 @@ export function MobilityChecklist() {
         </CardContent>
       </Card>
 
-      {/* Today's Recommendations */}
+  {/* Today&apos;s Recommendations */}
       <Card>
         <CardHeader>
-          <CardTitle>Today's Mobility Focus</CardTitle>
+          <CardTitle>Today&apos;s Mobility Focus</CardTitle>
           <CardDescription>
             Recommended based on your schedule and workout plan
           </CardDescription>

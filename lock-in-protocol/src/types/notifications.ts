@@ -17,7 +17,7 @@ export interface ScheduledNotification {
   scheduledTime: Date;
   type: NotificationType;
   tag: string;
-  data?: any;
+  data?: Record<string, unknown>;
   actions?: NotificationAction[];
 }
 

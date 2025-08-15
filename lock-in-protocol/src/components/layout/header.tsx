@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+//
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X, User, Settings } from 'lucide-react'
@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { NAVIGATION_ITEMS } from '@/lib/constants'
 
 interface HeaderProps {
@@ -79,8 +80,11 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }: HeaderProps) {
             </Link>
           </div>
           
-          {/* User menu */}
-          <DropdownMenu>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            
+            {/* User menu */}
+            <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
@@ -112,7 +116,8 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }: HeaderProps) {
                 Log out
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </header>

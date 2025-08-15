@@ -185,7 +185,7 @@ export function StrategicReview() {
                     <div className="grid gap-1 text-xs text-muted-foreground">
                       {goal.keyMetrics.map((metric, index) => (
                         <div key={index} className="flex items-center gap-1">
-                          <div className="w-1 h-1 rounded-full bg-blue-500"></div>
+                          <div className="w-1 h-1 rounded-full bg-blue-500" />
                           {metric}
                         </div>
                       ))}

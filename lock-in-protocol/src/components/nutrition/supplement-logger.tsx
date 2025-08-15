@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
@@ -78,7 +77,7 @@ const SUPPLEMENT_PROTOCOLS: SupplementProtocol[] = [
 
 export function SupplementLogger() {
   const [todaySupplements, setTodaySupplements] = useState<SupplementLog[]>([])
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+  // const [selectedDate, setSelectedDate] = useState<Date>(new Date())
 
   useEffect(() => {
     // Initialize today's supplements based on protocols
@@ -126,7 +125,7 @@ export function SupplementLogger() {
   }
 
   const getTimingStatus = (supplement: SupplementLog) => {
-    if (!supplement.completed || !supplement.actualTime) return 'pending'
+    if (!supplement.completed || !supplement.actualTime) {return 'pending'}
     
     const planned = new Date(`2000-01-01T${supplement.timing}:00`)
     const actual = new Date(`2000-01-01T${supplement.actualTime}:00`)
@@ -138,8 +137,8 @@ export function SupplementLogger() {
       window = 30 // Critical post-workout window
     }
     
-    if (diffMinutes <= window / 2) return 'on-time'
-    if (diffMinutes <= window) return 'acceptable'
+    if (diffMinutes <= window / 2) {return 'on-time'}
+    if (diffMinutes <= window) {return 'acceptable'}
     return 'late'
   }
 
@@ -209,7 +208,7 @@ export function SupplementLogger() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{Math.round(getCompletionRate())}%</div>
-            <p className="text-xs text-muted-foreground">today's compliance</p>
+            <p className="text-xs text-muted-foreground">today&apos;s compliance</p>
           </CardContent>
         </Card>
 
@@ -230,7 +229,7 @@ export function SupplementLogger() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            Today's Supplement Schedule
+            Today&apos;s Supplement Schedule
           </CardTitle>
           <CardDescription>
             Track your supplement timing and completion throughout the day

@@ -90,7 +90,7 @@ export function NotificationPreferences() {
         <CardHeader>
           <CardTitle>Notification Types</CardTitle>
           <CardDescription>
-            Choose which types of notifications you'd like to receive
+            Choose which types of notifications you&apos;d like to receive
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -115,7 +115,7 @@ export function NotificationPreferences() {
               <div className="space-y-1">
                 <Label htmlFor="pomodoro-breaks">Pomodoro Break Alerts</Label>
                 <p className="text-sm text-muted-foreground">
-                  Get notified when it's time for a break
+                  Get notified when it&apos;s time for a break
                 </p>
               </div>
               <Switch
@@ -131,7 +131,7 @@ export function NotificationPreferences() {
               <div className="space-y-1">
                 <Label htmlFor="workout-reminders">Workout Reminders</Label>
                 <p className="text-sm text-muted-foreground">
-                  Get notified when it's time to work out
+                  Get notified when it&apos;s time to work out
                 </p>
               </div>
               <Switch
@@ -283,7 +283,6 @@ export function NotificationPreferences() {
                   body: 'Test notification is working! 🎉',
                   icon: '/icons/icon-192x192.png',
                   badge: '/icons/icon-72x72.png',
-                  vibrate: preferences.vibrationEnabled ? [100, 50, 100] : undefined,
                   silent: !preferences.soundEnabled
                 });
               } else {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -99,7 +99,7 @@ export function HydrationTracker() {
   }
 
   const removeLastEntry = () => {
-    if (todayEntries.length === 0) return
+    if (todayEntries.length === 0) {return}
     
     const lastEntry = todayEntries[0]
     setTodayEntries(prev => prev.slice(1))
@@ -121,9 +121,9 @@ export function HydrationTracker() {
 
   const getHydrationStatus = () => {
     const percentage = getProgressPercentage()
-    if (percentage >= 100) return { status: 'excellent', color: 'text-green-600', message: 'Goal achieved!' }
-    if (percentage >= 75) return { status: 'good', color: 'text-blue-600', message: 'Great progress!' }
-    if (percentage >= 50) return { status: 'moderate', color: 'text-yellow-600', message: 'Keep going!' }
+    if (percentage >= 100) {return { status: 'excellent', color: 'text-green-600', message: 'Goal achieved!' }}
+    if (percentage >= 75) {return { status: 'good', color: 'text-blue-600', message: 'Great progress!' }}
+    if (percentage >= 50) {return { status: 'moderate', color: 'text-yellow-600', message: 'Keep going!' }}
     return { status: 'low', color: 'text-red-600', message: 'Need more water!' }
   }
 
@@ -162,7 +162,7 @@ export function HydrationTracker() {
   const nextReminder = getTimeUntilNextReminder()
   const currentMilestone = getCurrentMilestone()
   const nextMilestone = getNextMilestone()
-  const currentTime = new Date().toTimeString().slice(0, 5)
+  // const currentTime = new Date().toTimeString().slice(0, 5)
 
   return (
     <div className="space-y-6">
@@ -170,7 +170,7 @@ export function HydrationTracker() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Today's Progress</CardTitle>
+            <CardTitle className="text-sm font-medium">Today&apos;s Progress</CardTitle>
             <Droplets className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
@@ -298,7 +298,7 @@ export function HydrationTracker() {
       {/* Recent Entries */}
       <Card>
         <CardHeader>
-          <CardTitle>Today's Hydration Log</CardTitle>
+          <CardTitle>Today&apos;s Hydration Log</CardTitle>
           <CardDescription>
             {todayEntries.length} entries • Last: {hydrationGoal.lastIntakeTime ? format(hydrationGoal.lastIntakeTime, 'HH:mm') : 'None'}
           </CardDescription>
@@ -315,7 +315,7 @@ export function HydrationTracker() {
               {todayEntries.map((entry) => (
                 <div key={entry.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
                     <div>
                       <p className="font-medium">{entry.amount}ml</p>
                       <p className="text-sm text-muted-foreground">
@@ -422,7 +422,7 @@ export function HydrationTracker() {
                 }`}>
                   <div className={`w-2 h-2 rounded-full ${
                     isPassed ? 'bg-gray-400' : 'bg-blue-500'
-                  }`}></div>
+                  }`} />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-sm">{time}</span>

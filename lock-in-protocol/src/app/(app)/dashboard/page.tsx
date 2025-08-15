@@ -4,6 +4,7 @@ import { CurrentActivity } from '@/components/dashboard/current-activity'
 import { DailyProgress } from '@/components/dashboard/daily-progress'
 import { QuickActions } from '@/components/dashboard/quick-actions'
 import { MotivationMetrics } from '@/components/dashboard/motivation-metrics'
+import { ErrorBoundary } from '@/components/error-boundary'
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -28,18 +29,26 @@ export default function DashboardPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Daily Progress - Takes up 2 columns on large screens */}
         <div className="lg:col-span-2">
-          <DailyProgress />
+          <ErrorBoundary>
+            <DailyProgress />
+          </ErrorBoundary>
         </div>
         
         {/* Quick Actions */}
         <div className="space-y-6">
-          <QuickActions />
-          <MotivationMetrics />
+          <ErrorBoundary>
+            <QuickActions />
+          </ErrorBoundary>
+          <ErrorBoundary>
+            <MotivationMetrics />
+          </ErrorBoundary>
         </div>
       </div>
 
       {/* Schedule Overview */}
-      <ScheduleOverview />
+      <ErrorBoundary>
+        <ScheduleOverview />
+      </ErrorBoundary>
     </div>
   )
 }

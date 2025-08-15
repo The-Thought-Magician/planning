@@ -3,110 +3,179 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import { 
-  Play, 
   Dumbbell, 
   UtensilsCrossed, 
-  NotebookPen, 
+ 
   Timer,
   Plus,
   CheckCircle,
-  Calendar
+  Calendar,
+  Droplets
 } from 'lucide-react'
 import Link from 'next/link'
+import { useTimeBlocks, useQuickWorkout, useQuickMeal } from '@/hooks/use-dashboard'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '@/lib/api'
+import { toast } from 'sonner'
+import { useState } from 'react'
 
-const quickActions = [
-  {
-    id: 'start-pomodoro',
-    title: 'Start Pomodoro',
-    description: '25-minute focus session',
-    icon: Timer,
-    color: 'bg-orange-500 hover:bg-orange-600',
-    action: 'start-timer',
-  },
-  {
-    id: 'log-workout',
-    title: 'Log Workout',
-    description: 'Record today\'s session',
-    icon: Dumbbell,
-    color: 'bg-red-500 hover:bg-red-600',
-    href: '/workout',
-  },
-  {
-    id: 'track-meal',
-    title: 'Track Meal',
-    description: 'Log nutrition intake',
-    icon: UtensilsCrossed,
-    color: 'bg-green-500 hover:bg-green-600',
-    href: '/nutrition',
-  },
-  {
-    id: 'add-notes',
-    title: 'Add Notes',
-    description: 'Quick reflection',
-    icon: NotebookPen,
-    color: 'bg-blue-500 hover:bg-blue-600',
-    action: 'add-note',
-  },
-  {
-    id: 'schedule-time',
-    title: 'Edit Schedule',
-    description: 'Adjust time blocks',
-    icon: Calendar,
-    color: 'bg-purple-500 hover:bg-purple-600',
-    href: '/calendar',
-  },
-  {
-    id: 'complete-activity',
-    title: 'Mark Complete',
-    description: 'Finish current block',
-    icon: CheckCircle,
-    color: 'bg-emerald-500 hover:bg-emerald-600',
-    action: 'complete-current',
-  },
-]
-
-const upcomingTasks = [
-  {
-    id: '1',
-    title: 'Review DSA Problems',
-    time: '10:30 AM',
-    category: 'Deep Work',
-    priority: 'high',
-  },
-  {
-    id: '2',
-    title: 'ME61011 Assignment',
-    time: '2:30 PM',
-    category: 'Class Work',
-    priority: 'medium',
-  },
-  {
-    id: '3',
-    title: 'Upper Body Workout',
-    time: '4:30 PM',
-    category: 'Fitness',
-    priority: 'high',
-  },
-]
+// Minimal shape used by this component
+interface UITimeBlock {
+  id: string
+  title: string
+  startTime: string | Date
+  endTime: string | Date
+  category: string
+  completed: boolean
+}
 
 export function QuickActions() {
-  const handleAction = (actionType: string) => {
-    switch (actionType) {
-      case 'start-timer':
-        // This would integrate with the pomodoro timer component
-        console.log('Starting pomodoro timer...')
-        break
-      case 'add-note':
-        // This would open a note-taking modal
-        console.log('Opening notes interface...')
-        break
-      case 'complete-current':
-        // This would mark the current activity as complete
-        console.log('Marking current activity as complete...')
-        break
-      default:
-        console.log('Unknown action:', actionType)
+  const [isLoading, setIsLoading] = useState<string | null>(null)
+  
+  const today = new Date().toISOString().split('T')[0]
+  const { data: timeBlocksResponse, isLoading: timeBlocksLoading } = useTimeBlocks(today)
+  const workoutMutation = useQuickWorkout()
+  const mealMutation = useQuickMeal()
+  
+  const queryClient = useQueryClient()
+  const hydrationMutation = useMutation({
+    mutationFn: (data: Record<string, unknown>) => api.createMeal(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['nutrition'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+  
+  const updateTimeBlockMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => 
+      api.updateTimeBlock(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['time-blocks'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+
+  const timeBlocks: UITimeBlock[] = timeBlocksResponse?.success
+    ? ((timeBlocksResponse.data as unknown as UITimeBlock[]) || [])
+    : []
+  const upcomingTasks = getUpcomingTasks(timeBlocks)
+  
+  // Find current active time block
+  const currentTimeBlock = timeBlocks.find((block) => {
+    const now = new Date()
+    const startTime = new Date(block.startTime as any)
+    const endTime = new Date(block.endTime as any)
+    return now >= startTime && now <= endTime && !block.completed
+  })
+
+  const quickActions = [
+    {
+      id: 'start-pomodoro',
+      title: 'Start Pomodoro',
+      description: '25-minute focus session',
+      icon: Timer,
+      color: 'bg-orange-500 hover:bg-orange-600',
+      action: 'start-timer',
+    },
+    {
+      id: 'log-workout',
+      title: 'Quick Workout',
+      description: 'Log completed session',
+      icon: Dumbbell,
+      color: 'bg-red-500 hover:bg-red-600',
+      action: 'log-workout',
+    },
+    {
+      id: 'track-meal',
+      title: 'Quick Meal',
+      description: 'Log nutrition intake',
+      icon: UtensilsCrossed,
+      color: 'bg-green-500 hover:bg-green-600',
+      action: 'track-meal',
+    },
+    {
+      id: 'log-hydration',
+      title: 'Add Water',
+      description: '+250ml hydration',
+      icon: Droplets,
+      color: 'bg-cyan-500 hover:bg-cyan-600',
+      action: 'log-hydration',
+    },
+    {
+      id: 'schedule-time',
+      title: 'Edit Schedule',
+      description: 'Adjust time blocks',
+      icon: Calendar,
+      color: 'bg-purple-500 hover:bg-purple-600',
+      href: '/calendar',
+    },
+    {
+      id: 'complete-activity',
+      title: 'Mark Complete',
+      description: currentTimeBlock ? `Complete: ${currentTimeBlock.title}` : 'No active block',
+      icon: CheckCircle,
+      color: 'bg-emerald-500 hover:bg-emerald-600',
+      action: 'complete-current',
+      disabled: !currentTimeBlock,
+    },
+  ]
+
+  const handleAction = async (actionType: string) => {
+    setIsLoading(actionType)
+    
+    try {
+      switch (actionType) {
+        case 'start-timer':
+          toast.info('Pomodoro timer would start here')
+          break
+          
+        case 'log-workout':
+          await workoutMutation.mutateAsync({
+            date: new Date(),
+            type: 'Quick Log',
+            completed: true,
+            exercises: []
+          })
+          break
+          
+        case 'track-meal':
+          await mealMutation.mutateAsync({
+            date: new Date(),
+            mealType: 'snack',
+            completed: true,
+            notes: 'Quick meal log'
+          })
+          break
+          
+        case 'log-hydration':
+          await hydrationMutation.mutateAsync({
+            date: new Date(),
+            waterIntake: 250
+          })
+          break
+          
+        case 'complete-current':
+          if (currentTimeBlock) {
+            await updateTimeBlockMutation.mutateAsync({
+              id: currentTimeBlock.id,
+              data: { completed: true }
+            })
+            toast.success('Current activity marked as complete!')
+          } else {
+            toast.info('No active time block to complete')
+          }
+          break
+          
+        default:
+          console.log('Unknown action:', actionType)
+      }
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      toast.error(`Action failed: ${message}`)
+    } finally {
+      setIsLoading(null)
     }
   }
 
@@ -146,13 +215,18 @@ export function QuickActions() {
                 <Button
                   key={action.id}
                   variant="outline"
-                  className={`h-auto p-4 flex flex-col items-center space-y-2 hover:scale-105 transition-all duration-200 ${action.color} text-white border-0`}
-                  onClick={() => handleAction(action.action!)}
+                  className={`h-auto p-4 flex flex-col items-center space-y-2 hover:scale-105 transition-all duration-200 ${
+                    action.disabled ? 'bg-gray-400 hover:bg-gray-400 cursor-not-allowed' : action.color
+                  } text-white border-0`}
+                  onClick={() => !action.disabled && handleAction(action.action!)}
+                  disabled={action.disabled || isLoading === action.action}
                 >
                   <IconComponent className="h-5 w-5" />
                   <div className="text-center">
                     <div className="text-sm font-medium">{action.title}</div>
-                    <div className="text-xs opacity-90">{action.description}</div>
+                    <div className="text-xs opacity-90">
+                      {isLoading === action.action ? 'Processing...' : action.description}
+                    </div>
                   </div>
                 </Button>
               )
@@ -178,8 +252,24 @@ export function QuickActions() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {upcomingTasks.map((task) => (
+          {timeBlocksLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-4 w-12" />
+                    </div>
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              ))}
+            </div>
+          ) : upcomingTasks.length > 0 ? (
+            <div className="space-y-3">
+              {upcomingTasks.map((task) => (
               <div
                 key={task.id}
                 className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
@@ -206,10 +296,52 @@ export function QuickActions() {
                   <div className="text-sm font-medium">{task.time}</div>
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <Calendar className="h-8 w-8 mx-auto mb-2" />
+              <p className="text-sm">No upcoming tasks for today</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
   )
 }
+
+// Helper function to get upcoming tasks from time blocks
+function getUpcomingTasks(timeBlocks: UITimeBlock[]): Array<{
+  id: string;
+  title: string;
+  time: string;
+  category: string;
+  priority: 'high' | 'medium' | 'low';
+}> {
+  const currentTime = new Date()
+  const today = new Date().toDateString()
+  
+  return timeBlocks
+    .filter(block => {
+      const blockDate = new Date(block.startTime as any).toDateString()
+      const blockTime = new Date(block.startTime as any)
+      return blockDate === today && blockTime > currentTime && !block.completed
+    })
+    .sort((a, b) => new Date(a.startTime as any).getTime() - new Date(b.startTime as any).getTime())
+    .slice(0, 3)
+    .map(block => ({
+      id: String(block.id),
+      title: String(block.title),
+      time: new Date(block.startTime as any).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      }),
+      category: String(block.category)
+        .replace(/_/g, ' ')
+        .toLowerCase()
+        .replace(/\b\w/g, (l: string) => l.toUpperCase()),
+      priority: block.category.includes('WORKOUT') || block.category.includes('DEEP_WORK') ? 'high' as const : 'medium' as const
+    }))
+}
+

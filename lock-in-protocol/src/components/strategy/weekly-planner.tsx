@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Calendar, Clock, Target, Plus, Edit, Save } from 'lucide-react'
+import { Calendar, Target, Plus, Edit, Save } from 'lucide-react'
 import { format, startOfWeek, addDays } from 'date-fns'
 
 interface WeeklyTask {
@@ -118,7 +118,7 @@ export function WeeklyPlanner() {
   }
 
   const addNewTask = () => {
-    if (!newTask.title || !newTask.category) return
+    if (!newTask.title || !newTask.category) {return}
 
     const task: WeeklyTask = {
       id: Date.now().toString(),
@@ -258,7 +258,7 @@ export function WeeklyPlanner() {
                         onChange={() => toggleTaskCompletion(task.id)}
                         className="w-3 h-3"
                       />
-                      <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority)}`}></div>
+                      <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority)}`} />
                     </div>
                     <p className="font-medium mb-1">{task.title}</p>
                     <div className="flex items-center justify-between">

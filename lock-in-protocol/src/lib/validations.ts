@@ -109,6 +109,28 @@ export const hiitTimerSchema = z.object({
   totalRounds: z.number().min(5).max(25).default(15),
 })
 
+// Additional schemas for completion tracking
+export const completionSchema = z.object({
+  completed: z.boolean(),
+  notes: z.string().optional(),
+})
+
+// Achievement schema for manual creation
+export const achievementSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
+  badge: z.string().min(1, 'Badge is required'),
+  category: z.string().min(1, 'Category is required'),
+  unlockedAt: z.date().optional(),
+})
+
+// Hydration tracking schema
+export const hydrationSchema = z.object({
+  date: z.date(),
+  waterIntake: z.number().min(0).max(10000), // ml
+  notes: z.string().optional()
+})
+
 // Export types
 export type TimeBlockFormData = z.infer<typeof timeBlockSchema>
 export type WorkoutSessionFormData = z.infer<typeof workoutSessionSchema>
@@ -119,3 +141,6 @@ export type DailyMetricFormData = z.infer<typeof dailyMetricSchema>
 export type WeeklyReviewFormData = z.infer<typeof weeklyReviewSchema>
 export type PomodoroTimerFormData = z.infer<typeof pomodoroTimerSchema>
 export type HIITTimerFormData = z.infer<typeof hiitTimerSchema>
+export type CompletionFormData = z.infer<typeof completionSchema>
+export type AchievementFormData = z.infer<typeof achievementSchema>
+export type HydrationFormData = z.infer<typeof hydrationSchema>

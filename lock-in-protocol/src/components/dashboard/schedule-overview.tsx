@@ -4,98 +4,62 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { CheckCircle, Clock, Edit, MoreHorizontal, Play } from 'lucide-react'
-import { TIME_BLOCK_CATEGORIES, DAILY_SCHEDULE_TEMPLATE } from '@/lib/constants'
+import { Skeleton } from '@/components/ui/skeleton'
+import { CheckCircle, Clock, Edit, MoreHorizontal, Play, AlertCircle } from 'lucide-react'
+import { TIME_BLOCK_CATEGORIES } from '@/lib/constants'
 import { TimeBlockCategory } from '@prisma/client'
+import { useTimeBlocks } from '@/hooks/use-dashboard'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '@/lib/api'
+import { toast } from 'sonner'
 import Link from 'next/link'
 
-// Mock schedule data - this would come from API in real implementation
-const mockScheduleData = [
-  {
-    id: '1',
-    title: 'Morning HIIT',
-    category: 'HIIT_MORNING' as TimeBlockCategory,
-    startTime: '05:25',
-    endTime: '05:40',
-    completed: true,
-    notes: 'Great energy boost!',
-  },
-  {
-    id: '2',
-    title: 'Morning Mobility',
-    category: 'MOBILITY_MORNING' as TimeBlockCategory,
-    startTime: '05:45',
-    endTime: '05:55',
-    completed: true,
-  },
-  {
-    id: '3',
-    title: 'Buffer Time',
-    category: 'BUFFER_TIME' as TimeBlockCategory,
-    startTime: '06:00',
-    endTime: '08:00',
-    completed: true,
-    notes: 'Used for shower and prep',
-  },
-  {
-    id: '4',
-    title: 'Breakfast',
-    category: 'MEAL_BREAKFAST' as TimeBlockCategory,
-    startTime: '08:00',
-    endTime: '08:30',
-    completed: true,
-  },
-  {
-    id: '5',
-    title: 'DSA Deep Work',
-    category: 'DEEP_WORK_DSA' as TimeBlockCategory,
-    startTime: '09:00',
-    endTime: '12:00',
-    completed: false, // Currently in progress
-    isActive: true,
-    pomodoroCount: 2,
-  },
-  {
-    id: '6',
-    title: 'Lunch Break',
-    category: 'MEAL_LUNCH' as TimeBlockCategory,
-    startTime: '13:00',
-    endTime: '14:00',
-    completed: false,
-  },
-  {
-    id: '7',
-    title: 'ME61011 Class',
-    category: 'CLASS_ME61011' as TimeBlockCategory,
-    startTime: '14:30',
-    endTime: '16:00',
-    completed: false,
-  },
-  {
-    id: '8',
-    title: 'Upper Body Workout',
-    category: 'WORKOUT_UPPER_1' as TimeBlockCategory,
-    startTime: '16:30',
-    endTime: '18:00',
-    completed: false,
-  },
-  {
-    id: '9',
-    title: 'Buffer Time',
-    category: 'BUFFER_TIME' as TimeBlockCategory,
-    startTime: '18:30',
-    endTime: '20:00',
-    completed: false,
-  },
-  {
-    id: '10',
-    title: 'Dinner',
-    category: 'MEAL_DINNER' as TimeBlockCategory,
-    startTime: '20:00',
-    endTime: '20:45',
-    completed: false,
-  },
-]
+// Component-specific TimeBlock interface
+interface UITimeBlock {
+  id: string
+  title: string
+  startTime: string | Date
+  endTime: string | Date
+  category: string
+  completed: boolean
+  notes?: string
+  pomodoroCount?: number
+}
+
+// Helper functions
+function formatTimeFromDate(date: Date): string {
+  return date.toTimeString().slice(0, 5)
+}
+
+function findNextIncompleteTimeBlock(timeBlocks: UITimeBlock[]) {
+  const currentTime = getCurrentTime()
+  const incompleteBlocks = timeBlocks
+    .filter(block => !block.completed)
+    .sort((a, b) => formatTimeFromDate(new Date(a.startTime as any)).localeCompare(formatTimeFromDate(new Date(b.startTime as any))))
+  
+  return incompleteBlocks.find(block => {
+    const blockStartTime = formatTimeFromDate(new Date(block.startTime as any))
+    return blockStartTime >= currentTime
+  }) || incompleteBlocks[0]
+}
+
+function getTimeUntilBlock(blockStartTime: string): string {
+  const now = new Date()
+  const currentTime = now.getHours() * 60 + now.getMinutes()
+  const [hours, minutes] = blockStartTime.split(':').map(Number)
+  const blockTime = hours * 60 + minutes
+  
+  let diff = blockTime - currentTime
+  if (diff < 0) {diff += 24 * 60} // Next day
+  
+  const diffHours = Math.floor(diff / 60)
+  const diffMinutes = diff % 60
+  
+  if (diffHours > 0) {
+    return `${diffHours}h ${diffMinutes}m`
+  }
+  return `${diffMinutes}m`
+}
 
 const getCurrentTime = () => {
   const now = new Date()
@@ -108,16 +72,59 @@ const isTimeBlockActive = (startTime: string, endTime: string) => {
 }
 
 export function ScheduleOverview() {
-  const completedCount = mockScheduleData.filter(block => block.completed).length
-  const totalCount = mockScheduleData.length
-  const adherenceRate = (completedCount / totalCount) * 100
+  const today = new Date().toISOString().split('T')[0]
+  const {
+    data: timeBlocksResponse,
+    isLoading,
+    error,
+  } = useTimeBlocks(today)
+
+  const queryClient = useQueryClient()
+  const updateTimeBlockMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => 
+      api.updateTimeBlock(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['time-blocks'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+
+  const timeBlocks: UITimeBlock[] = timeBlocksResponse?.success 
+    ? ((timeBlocksResponse.data as unknown as UITimeBlock[]) || [])
+    : []
+  const completedCount = timeBlocks.filter(block => block.completed).length
+  const totalCount = timeBlocks.length
+  const adherenceRate = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
+
+  const handleMarkComplete = async (blockId: string) => {
+    try {
+      await updateTimeBlockMutation.mutateAsync({
+        id: blockId,
+        data: { completed: true },
+      })
+      toast.success('Time block marked as complete!')
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      toast.error(`Failed to update time block: ${message}`)
+    }
+  }
+
+  const nextBlock = timeBlocks.length > 0 ? findNextIncompleteTimeBlock(timeBlocks) : null
+
+  if (isLoading) {
+    return <ScheduleOverviewSkeleton />
+  }
+
+  if (error) {
+    return <ScheduleOverviewError error={error.message} />
+  }
 
   return (
     <Card>
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-xl">Today's Schedule</CardTitle>
+            <CardTitle className="text-xl">Today&apos;s Schedule</CardTitle>
             <CardDescription>
               {new Date().toLocaleDateString('en-US', { 
                 weekday: 'long',
@@ -140,13 +147,19 @@ export function ScheduleOverview() {
       
       <CardContent>
         <div className="space-y-3">
-          {mockScheduleData.map((timeBlock) => {
-            const categoryData = TIME_BLOCK_CATEGORIES[timeBlock.category]
-            const isActive = timeBlock.isActive || isTimeBlockActive(timeBlock.startTime, timeBlock.endTime)
+          {timeBlocks.map((timeBlock: UITimeBlock) => {
+            const categoryData = TIME_BLOCK_CATEGORIES[timeBlock.category as TimeBlockCategory] || {
+              icon: '📅',
+              color: '#6b7280',
+              label: 'Unknown',
+            }
+            const startTime = formatTimeFromDate(new Date(timeBlock.startTime as string))
+            const endTime = formatTimeFromDate(new Date(timeBlock.endTime as string))
+            const isActive = isTimeBlockActive(startTime, endTime)
             
             return (
               <div
-                key={timeBlock.id}
+                key={timeBlock.id as string}
                 className={`flex items-center space-x-4 p-4 rounded-lg border transition-all ${
                   isActive 
                     ? 'border-primary bg-primary/5 shadow-sm' 
@@ -157,7 +170,7 @@ export function ScheduleOverview() {
               >
                 {/* Time */}
                 <div className="text-sm font-mono text-muted-foreground min-w-[80px]">
-                  {timeBlock.startTime} - {timeBlock.endTime}
+                  {startTime} - {endTime}
                 </div>
 
                 {/* Status Icon */}
@@ -179,7 +192,7 @@ export function ScheduleOverview() {
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-2">
-                    <span className="font-medium truncate">{timeBlock.title}</span>
+                    <span className="font-medium truncate">{timeBlock.title as string}</span>
                     <Badge 
                       variant="outline"
                       className="text-xs"
@@ -193,7 +206,7 @@ export function ScheduleOverview() {
                     </Badge>
                     {timeBlock.pomodoroCount && (
                       <Badge variant="secondary" className="text-xs">
-                        🍅 {timeBlock.pomodoroCount}
+                        🍅 {timeBlock.pomodoroCount as number}
                       </Badge>
                     )}
                     {isActive && (
@@ -204,7 +217,7 @@ export function ScheduleOverview() {
                   </div>
                   {timeBlock.notes && (
                     <div className="text-sm text-muted-foreground mt-1 truncate">
-                      {timeBlock.notes}
+                      {timeBlock.notes as string}
                     </div>
                   )}
                 </div>
@@ -212,7 +225,12 @@ export function ScheduleOverview() {
                 {/* Actions */}
                 <div className="flex items-center space-x-1">
                   {isActive && !timeBlock.completed && (
-                    <Button size="sm" variant="outline">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleMarkComplete(timeBlock.id as string)}
+                      disabled={updateTimeBlockMutation.isPending}
+                    >
                       <CheckCircle className="h-4 w-4" />
                     </Button>
                   )}
@@ -231,7 +249,11 @@ export function ScheduleOverview() {
         {/* Schedule Actions */}
         <div className="flex items-center justify-between mt-6 pt-4 border-t">
           <div className="text-sm text-muted-foreground">
-            Next: <span className="font-medium">Lunch Break</span> in 2h 15m
+            {nextBlock ? (
+              <>Next: <span className="font-medium">{nextBlock.title as string}</span> in {getTimeUntilBlock(formatTimeFromDate(new Date(nextBlock.startTime as string)))}</>
+            ) : (
+              "All tasks completed!"
+            )}
           </div>
           <div className="space-x-2">
             <Link href="/calendar">
@@ -239,10 +261,104 @@ export function ScheduleOverview() {
                 Edit Schedule
               </Button>
             </Link>
-            <Button size="sm">
-              Mark Current Complete
-            </Button>
+            {nextBlock && (
+              <Button 
+                size="sm"
+                onClick={() => handleMarkComplete(nextBlock.id as string)}
+                disabled={updateTimeBlockMutation.isPending}
+              >
+                Mark Current Complete
+              </Button>
+            )}
           </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// Loading skeleton component
+function ScheduleOverviewSkeleton() {
+  return (
+    <Card>
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-4 w-48" />
+          </div>
+          <div className="text-right space-y-1">
+            <Skeleton className="h-6 w-12" />
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-1 w-20" />
+          </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent>
+        <div className="space-y-3">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="flex items-center space-x-4 p-4 rounded-lg border"
+            >
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-5 w-5 rounded-full" />
+              <Skeleton className="h-5 w-5 rounded" />
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-3 w-48" />
+              </div>
+              <div className="flex space-x-1">
+                <Skeleton className="h-8 w-8" />
+                <Skeleton className="h-8 w-8" />
+                <Skeleton className="h-8 w-8" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center justify-between mt-6 pt-4 border-t">
+          <Skeleton className="h-4 w-40" />
+          <div className="space-x-2 flex">
+            <Skeleton className="h-8 w-24" />
+            <Skeleton className="h-8 w-32" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// Error component
+function ScheduleOverviewError({ error }: { error: string }) {
+  return (
+    <Card>
+      <CardHeader className="pb-4">
+        <CardTitle className="text-xl flex items-center space-x-2">
+          <AlertCircle className="h-5 w-5 text-red-500" />
+          <span>Error Loading Schedule</span>
+        </CardTitle>
+        <CardDescription>
+          Unable to load today&apos;s schedule
+        </CardDescription>
+      </CardHeader>
+      
+      <CardContent>
+        <div className="text-center py-8">
+          <div className="text-sm text-muted-foreground mb-4">
+            {error}
+          </div>
+          <Button 
+            onClick={() => window.location.reload()} 
+            variant="outline" 
+            size="sm"
+          >
+            Retry
+          </Button>
         </div>
       </CardContent>
     </Card>

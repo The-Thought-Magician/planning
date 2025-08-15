@@ -1,4 +1,4 @@
-import { TimeBlockCategory, WorkoutType, MealType, SupplementType, MilestoneCategory } from '@prisma/client'
+import { TimeBlockCategory } from '@prisma/client'
 
 export const TIME_BLOCK_CATEGORIES = {
   DEEP_WORK_DSA: { label: 'DSA Deep Work', color: '#3B82F6', icon: '💻' },

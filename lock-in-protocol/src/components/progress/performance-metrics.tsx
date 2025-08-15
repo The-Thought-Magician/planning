@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts'
-import { Activity, Clock, Target, Zap, TrendingUp, Brain } from 'lucide-react'
+import { Activity, Clock, Zap, TrendingUp, Brain } from 'lucide-react'
 
 const PERFORMANCE_TRENDS = [
   { date: '2024-01-08', productivity: 85, energy: 8, focus: 7, stress: 3 },
