@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { withDatabaseFallback } from '@/lib/prisma'
 import { 
   authenticateUser, 
   createErrorResponse, 
@@ -20,9 +20,11 @@ export async function GET(_request: NextRequest) {
       return createErrorResponse(API_ERRORS.UNAUTHORIZED, 401)
     }
 
-    // Find user in database
-    const dbUser = await prisma.user.findUnique({
-      where: { email: user.email! }
+    // Find user in database with fallback support
+    const dbUser = await withDatabaseFallback(async (prisma) => {
+      return await prisma.user.findUnique({
+        where: { email: user.email! }
+      })
     })
 
     if (!dbUser) {
