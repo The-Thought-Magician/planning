@@ -26,8 +26,8 @@ export default function DashboardPage() {
       <CurrentActivity />
 
       {/* Main Dashboard Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Daily Progress - Takes up 2 columns on large screens */}
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
+        {/* Daily Progress - Full width on mobile, 2 columns on large screens */}
         <div className="lg:col-span-2">
           <ErrorBoundary>
             <DailyProgress />
@@ -35,7 +35,7 @@ export default function DashboardPage() {
         </div>
         
         {/* Quick Actions */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <ErrorBoundary>
             <QuickActions />
           </ErrorBoundary>

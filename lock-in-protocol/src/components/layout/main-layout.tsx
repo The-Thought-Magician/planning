@@ -42,7 +42,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         {/* Main Content */}
         <main className="flex-1 overflow-hidden">
           <div className="h-[calc(100vh-4rem)] overflow-auto">
-            <div className="container py-6">
+            <div className="container px-4 py-4 sm:px-6 sm:py-6">
               {children}
             </div>
           </div>

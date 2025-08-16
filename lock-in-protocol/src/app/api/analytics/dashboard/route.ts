@@ -63,119 +63,141 @@ export async function GET(_request: NextRequest) {
       recentWeeklyReview
     ] = await Promise.all([
       // Today's metrics
-      prisma.dailyMetric.findFirst({
-        where: {
-          userId: dbUser.id,
-          date: {
-            gte: startOfDay,
-            lte: endOfDay
-          }
-        }
-      }),
-      
-      // This week's data
-      prisma.timeBlock.findMany({
-        where: {
-          userId: dbUser.id,
-          startTime: {
-            gte: startOfWeek,
-            lte: endOfWeek
-          }
-        }
-      }),
-      
-      prisma.workoutSession.findMany({
-        where: {
-          userId: dbUser.id,
-          date: {
-            gte: startOfWeek,
-            lte: endOfWeek
-          }
-        },
-        include: {
-          exercises: true
-        }
-      }),
-      
-      prisma.mealEntry.findMany({
-        where: {
-          userId: dbUser.id,
-          date: {
-            gte: startOfWeek,
-            lte: endOfWeek
-          }
-        }
-      }),
-      
-      prisma.supplementLog.findMany({
-        where: {
-          userId: dbUser.id,
-          date: {
-            gte: startOfWeek,
-            lte: endOfWeek
-          }
-        }
-      }),
-      
-      // Monthly metrics
-      prisma.dailyMetric.findMany({
-        where: {
-          userId: dbUser.id,
-          date: {
-            gte: thirtyDaysAgo
-          }
-        },
-        orderBy: { date: 'desc' }
-      }),
-      
-      prisma.milestone.findMany({
-        where: {
-          userId: dbUser.id,
-          createdAt: {
-            gte: thirtyDaysAgo
-          }
-        }
-      }),
-      
-      // Total stats
-      prisma.user.findUnique({
-        where: { id: dbUser.id },
-        include: {
-          _count: {
-            select: {
-              timeBlocks: true,
-              workoutSessions: true,
-              mealEntries: true,
-              supplementLogs: true,
-              milestones: true,
-              weeklyReviews: true,
-              dailyMetrics: true
+      withDatabaseFallback(async (prisma) => 
+        prisma.dailyMetric.findFirst({
+          where: {
+            userId: dbUser.id,
+            date: {
+              gte: startOfDay,
+              lte: endOfDay
             }
           }
-        }
-      }),
+        })
+      ),
+      
+      // This week's data
+      withDatabaseFallback(async (prisma) => 
+        prisma.timeBlock.findMany({
+          where: {
+            userId: dbUser.id,
+            startTime: {
+              gte: startOfWeek,
+              lte: endOfWeek
+            }
+          }
+        })
+      ),
+      
+      withDatabaseFallback(async (prisma) => 
+        prisma.workoutSession.findMany({
+          where: {
+            userId: dbUser.id,
+            date: {
+              gte: startOfWeek,
+              lte: endOfWeek
+            }
+          },
+          include: {
+            exercises: true
+          }
+        })
+      ),
+      
+      withDatabaseFallback(async (prisma) => 
+        prisma.mealEntry.findMany({
+          where: {
+            userId: dbUser.id,
+            date: {
+              gte: startOfWeek,
+              lte: endOfWeek
+            }
+          }
+        })
+      ),
+      
+      withDatabaseFallback(async (prisma) => 
+        prisma.supplementLog.findMany({
+          where: {
+            userId: dbUser.id,
+            date: {
+              gte: startOfWeek,
+              lte: endOfWeek
+            }
+          }
+        })
+      ),
+      
+      // Monthly metrics
+      withDatabaseFallback(async (prisma) => 
+        prisma.dailyMetric.findMany({
+          where: {
+            userId: dbUser.id,
+            date: {
+              gte: thirtyDaysAgo
+            }
+          },
+          orderBy: { date: 'desc' }
+        })
+      ),
+      
+      withDatabaseFallback(async (prisma) => 
+        prisma.milestone.findMany({
+          where: {
+            userId: dbUser.id,
+            createdAt: {
+              gte: thirtyDaysAgo
+            }
+          }
+        })
+      ),
+      
+      // Total stats
+      withDatabaseFallback(async (prisma) => 
+        prisma.user.findUnique({
+          where: { id: dbUser.id },
+          include: {
+            _count: {
+              select: {
+                timeBlocks: true,
+                workoutSessions: true,
+                mealEntries: true,
+                supplementLogs: true,
+                milestones: true,
+                weeklyReviews: true,
+                dailyMetrics: true
+              }
+            }
+          }
+        })
+      ),
       
       // Recent activity
-      prisma.timeBlock.findMany({
-        where: { userId: dbUser.id },
-        orderBy: { createdAt: 'desc' },
-        take: 5
-      }),
+      withDatabaseFallback(async (prisma) => 
+        prisma.timeBlock.findMany({
+          where: { userId: dbUser.id },
+          orderBy: { createdAt: 'desc' },
+          take: 5
+        })
+      ),
       
-      prisma.workoutSession.findMany({
-        where: { userId: dbUser.id },
-        orderBy: { date: 'desc' },
-        take: 3,
-        include: {
-          exercises: true
-        }
-      }),
+      withDatabaseFallback(async (prisma) => 
+        prisma.workoutSession.findMany({
+          where: { userId: dbUser.id },
+          orderBy: { date: 'desc' },
+          take: 3,
+          include: {
+            exercises: true
+          }
+        })
+      ),
       
       // Most recent weekly review
-      prisma.weeklyReview.findFirst({
-        where: { userId: dbUser.id },
-        orderBy: { weekStarting: 'desc' }
-      })
+      withDatabaseFallback(async (prisma) => 
+        prisma.weeklyReview.findFirst({
+          where: { userId: dbUser.id },
+          orderBy: { weekStarting: 'desc' }
+        })
+      )
     ])
 
     // Calculate dashboard metrics
@@ -298,7 +320,22 @@ export async function GET(_request: NextRequest) {
 }
 
 // Helper functions
-function calculateNutritionScore(meals: Record<string, unknown>[], supplements: Record<string, unknown>[]): number {
+interface MealEntry {
+  completed: boolean
+}
+
+interface SupplementLog {
+  completed: boolean
+}
+
+interface DailyMetric {
+  workoutCompleted: boolean
+  scheduleAdherence: number
+  deepWorkHours: number
+  pomodoroCount: number
+}
+
+function calculateNutritionScore(meals: MealEntry[], supplements: SupplementLog[]): number {
   const mealScore = meals.filter((m) => {
     return m.completed
   }).length * 20
@@ -306,7 +343,7 @@ function calculateNutritionScore(meals: Record<string, unknown>[], supplements: 
   return Math.min(mealScore + supplementScore, 100)
 }
 
-function calculateWorkoutConsistency(metrics: Record<string, unknown>[]): number {
+function calculateWorkoutConsistency(metrics: DailyMetric[]): number {
   if (metrics.length === 0) {return 0}
   const workoutDays = metrics.filter(m => m.workoutCompleted).length
   return (workoutDays / metrics.length) * 100
@@ -318,17 +355,23 @@ async function calculateCompletionRate(userId: string, type: string): Promise<nu
   
   switch (type) {
     case 'timeBlocks':
-      const timeBlocks = await prisma.timeBlock.findMany({ where: { userId } })
+      const timeBlocks = await withDatabaseFallback(async (prisma) => 
+        prisma.timeBlock.findMany({ where: { userId } })
+      )
       total = timeBlocks.length
       completed = timeBlocks.filter(tb => tb.completed).length
       break
     case 'workouts':
-      const workouts = await prisma.workoutSession.findMany({ where: { userId } })
+      const workouts = await withDatabaseFallback(async (prisma) => 
+        prisma.workoutSession.findMany({ where: { userId } })
+      )
       total = workouts.length
       completed = workouts.filter(w => w.completed).length
       break
     case 'milestones':
-      const milestones = await prisma.milestone.findMany({ where: { userId } })
+      const milestones = await withDatabaseFallback(async (prisma) => 
+        prisma.milestone.findMany({ where: { userId } })
+      )
       total = milestones.length
       completed = milestones.filter(m => m.completed).length
       break
@@ -337,12 +380,16 @@ async function calculateCompletionRate(userId: string, type: string): Promise<nu
   return total > 0 ? (completed / total) * 100 : 0
 }
 
-function generateInsights(metrics: Record<string, unknown>[], _timeBlocks: Record<string, unknown>[], workouts: Record<string, unknown>[]): string[] {
+interface WorkoutSession {
+  completed: boolean
+}
+
+function generateInsights(metrics: DailyMetric[], _timeBlocks: unknown[], workouts: WorkoutSession[]): string[] {
   const insights: string[] = []
   
   // Schedule adherence insights
   const avgAdherence = metrics.length > 0 
-    ? metrics.reduce((sum, m) => sum + (m.scheduleAdherence as number), 0) / metrics.length 
+    ? metrics.reduce((sum, m) => sum + m.scheduleAdherence, 0) / metrics.length 
     : 0
   
   if (avgAdherence > 0.8) {
@@ -365,7 +412,7 @@ function generateInsights(metrics: Record<string, unknown>[], _timeBlocks: Recor
   
   // Deep work insights
   const avgDeepWork = metrics.length > 0 
-    ? metrics.reduce((sum, m) => sum + (m.deepWorkHours as number), 0) / metrics.length 
+    ? metrics.reduce((sum, m) => sum + m.deepWorkHours, 0) / metrics.length 
     : 0
   
   if (avgDeepWork > 6) {

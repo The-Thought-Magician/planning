@@ -96,9 +96,9 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }: HeaderProps) {
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">Chiranjeet</p>
+                  <p className="text-sm font-medium leading-none">Chiranjeet Mishra</p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    chiranjeet@example.com
+                    chiranjeetmishra13@gmail.com
                   </p>
                 </div>
               </DropdownMenuLabel>

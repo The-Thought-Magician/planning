@@ -47,7 +47,7 @@ function createFallbackClient(): PrismaClient {
 }
 
 // Test if a database connection is working
-async function testConnection(client: PrismaClient, timeout: number = 5000): Promise<boolean> {
+async function testConnection(client: PrismaClient, timeout = 5000): Promise<boolean> {
   try {
     const timeoutPromise = new Promise((_, reject) => 
       setTimeout(() => reject(new Error('Connection timeout')), timeout)
@@ -70,7 +70,7 @@ export async function withDatabaseFallback<T>(
   operation: DatabaseOperation<T>,
   config: Partial<DatabaseConfig> = {}
 ): Promise<T> {
-  const { maxRetries, retryDelay, connectionTimeout } = { ...defaultConfig, ...config }
+  const { connectionTimeout } = { ...defaultConfig, ...config }
   let lastError: Error | null = null
 
   // Try primary connection first (pooled)

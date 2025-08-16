@@ -50,9 +50,7 @@ export const metadata: Metadata = {
     description: "Personal productivity tracking system",
   },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
+    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='90' font-size='80'>🎯</text></svg>",
   },
   manifest: "/manifest.json",
 };
