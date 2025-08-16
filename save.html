@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>The Lock-In Protocol – Interactive Blueprint</title>
   <meta name="description" content="The Lock-In Protocol: An Integrated High-Performance Blueprint for Chiranjeet Mishra – interactive, mobile-friendly, and printable." />
   <!-- UI enhancements inspired by cat.html -->
@@ -79,19 +79,9 @@
     .ctrls { display: flex; gap: 8px; align-items: center }
     .ctrls button, .ctrls .select-like {
       background: var(--chip); color: var(--text); border: 1px solid var(--border);
-      border-radius: 10px; padding: 8px 10px; font-weight: 600; cursor: pointer;
-      min-height: 44px; /* iOS recommended touch target size */
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s ease;
+      border-radius: 10px; padding: 8px 10px; font-weight: 600; cursor: pointer
     }
-    .ctrls button:hover, .ctrls button:focus { 
-      filter: brightness(1.06); 
-      transform: translateY(-1px);
-    }
-    .ctrls button:active { 
-      transform: translateY(0); 
-      filter: brightness(0.95);
-    }
+    .ctrls button:hover { filter: brightness(1.06) }
     .ctrls input[type="search"] {
       background: var(--chip); color: var(--text); border: 1px solid var(--border);
       border-radius: 10px; padding: 8px 10px; min-width: 220px
@@ -106,40 +96,15 @@
       z-index: 45;
     }
     .tablist {
-      display: flex; gap: 8px; overflow-x: auto; padding: 8px 16px; scrollbar-width: thin;
-      scroll-snap-type: x mandatory; scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch;
-    }
-    .tablist::-webkit-scrollbar {
-      height: 4px;
-    }
-    .tablist::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .tablist::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 2px;
+  display: flex; gap: 8px; overflow-x: auto; padding: 8px 16px; scrollbar-width: thin;
+  scroll-snap-type: x mandatory
     }
     .tablist button[role="tab"] {
       background: var(--chip); color: var(--text); border: 1px solid var(--border);
       border-radius: 10px; padding: 10px 12px; font-weight: 700; white-space: nowrap; cursor: pointer;
-      scroll-snap-align: start; min-height: 44px; /* Touch-friendly height */
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      transition: all 0.2s ease;
+  scroll-snap-align: start
     }
-    .tablist button[role="tab"]:hover, .tablist button[role="tab"]:focus { 
-      filter: brightness(1.06); 
-      transform: translateY(-1px);
-    }
-    .tablist button[role="tab"]:active { 
-      transform: translateY(0); 
-      filter: brightness(0.95);
-    }
-    .tablist button[aria-selected="true"] { 
-      outline: 2px solid var(--accent); 
-      box-shadow: inset 0 -2px 0 var(--accent);
-      background: color-mix(in srgb, var(--accent) 15%, var(--chip));
-    }
+    .tablist button[aria-selected="true"] { outline: 2px solid var(--accent); box-shadow: inset 0 -2px 0 var(--accent) }
 
   main { padding: 12px 16px }
     .panel {
@@ -167,29 +132,7 @@
     .kpi .value { font-size: 20px; font-weight: 800 }
 
     /* Tables */
-  .table-wrap { 
-    overflow: auto; -webkit-overflow-scrolling: touch; 
-    border: 1px solid var(--border); border-radius: 10px; 
-    background: var(--panel); box-shadow: var(--shadow); margin: 14px 0;
-    scroll-behavior: smooth; /* Smooth scrolling */
-    /* Custom scrollbar for webkit */
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-  .table-wrap::-webkit-scrollbar {
-    height: 8px;
-    width: 8px;
-  }
-  .table-wrap::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .table-wrap::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 4px;
-  }
-  .table-wrap::-webkit-scrollbar-thumb:hover {
-    background: var(--muted);
-  }
+  .table-wrap { overflow: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); box-shadow: var(--shadow); margin: 14px 0 }
     table { width: 100%; border-collapse: collapse; min-width: 720px }
     th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top }
     th { text-align: left; color: var(--muted); font-weight: 700; background: color-mix(in srgb, var(--panel) 92%, transparent) }
@@ -217,43 +160,17 @@
     .fab {
       position: fixed; right: 16px; bottom: 16px; display: grid; gap: 10px; z-index: 40
     }
-    .fab button { 
-      width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--border); 
-      background: var(--panel); color: var(--text); box-shadow: var(--shadow); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s ease; touch-action: manipulation;
-    }
-    .fab button:hover, .fab button:focus { 
-      filter: brightness(1.06); transform: translateY(-2px); 
-      box-shadow: var(--shadow), 0 4px 12px rgba(0,0,0,0.15);
-    }
-    .fab button:active { 
-      transform: translateY(0); filter: brightness(0.95); 
-    }
+    .fab button { width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--text); box-shadow: var(--shadow); cursor: pointer }
+    .fab button:hover { filter: brightness(1.06) }
 
   /* Pomodoro card */
   .pomodoro { border: 1px solid var(--border); background: color-mix(in srgb, var(--panel) 85%, transparent); border-radius: 12px; padding: 16px; display: grid; gap: 12px }
   .pomodoro h4 { margin: 0 }
   #timerDisplay { font-weight: 800; font-size: clamp(28px, 6vw, 48px); letter-spacing: -0.02em }
   .pom-controls { display: flex; gap: 8px; flex-wrap: wrap }
-  .btn-primary { 
-    background: var(--accent); color: #0b1020; border: none; border-radius: 10px; 
-    padding: 10px 12px; font-weight: 800; cursor: pointer; min-height: 44px;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s ease; touch-action: manipulation;
-  }
-  .btn-secondary { 
-    background: var(--chip); color: var(--text); border: 1px solid var(--border); 
-    border-radius: 10px; padding: 10px 12px; font-weight: 700; cursor: pointer; min-height: 44px;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s ease; touch-action: manipulation;
-  }
-  .btn-primary:hover, .btn-primary:focus, .btn-secondary:hover, .btn-secondary:focus { 
-    filter: brightness(1.06); transform: translateY(-1px); 
-  }
-  .btn-primary:active, .btn-secondary:active { 
-    transform: translateY(0); filter: brightness(0.95); 
-  }
+  .btn-primary { background: var(--accent); color: #0b1020; border: none; border-radius: 10px; padding: 10px 12px; font-weight: 800; cursor: pointer }
+  .btn-secondary { background: var(--chip); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-weight: 700; cursor: pointer }
+  .btn-primary:hover, .btn-secondary:hover { filter: brightness(1.06) }
 
     /* Print styles */
     @media print {
@@ -269,204 +186,19 @@
       .ctrls { flex-wrap: wrap }
       .ctrls input[type="search"] { min-width: 160px }
     }
-    /* Mobile improvements - Better readability */
+    /* Phones */
     @media (max-width: 640px) {
-      /* Main layout optimizations - More breathing room */
-      .wrap { padding: 12px 16px }
-      main { padding: 16px 20px }
-      
-      /* Header improvements */
-      h1.title { font-size: 20px; margin: 0; line-height: 1.3 }
-      .topbar-row { gap: 10px }
+      /* keep tabs visible on phones */
+      nav.tabs { display: block }
       #clock { display: none }
-      
-      /* Controls optimization */
-      .ctrls { 
-        gap: 8px; 
-        flex-wrap: wrap; 
-        width: 100%;
-        justify-content: space-between;
-      }
-      .ctrls input[type="search"] { 
-        min-width: 0; 
-        width: 100%; 
-        flex: 1 1 100%; 
-        order: 10; /* Move search to bottom */
-        margin-top: 8px;
-        padding: 10px 12px;
-        font-size: 16px; /* Prevent zoom on iOS */
-      }
-      .ctrls button {
-        padding: 8px 12px;
-        font-size: 14px;
-        min-width: 70px;
-      }
-      
-      /* Tab navigation improvements */
-      nav.tabs { 
-        position: sticky;
-        top: 70px; /* Adjust for mobile header height */
-      }
-      .tablist { 
-        gap: 6px; 
-        padding: 8px 12px;
-        scroll-snap-type: x mandatory;
-      }
-      .tablist button[role="tab"] { 
-        padding: 8px 12px; 
-        font-weight: 600; 
-        font-size: 14px;
-        white-space: nowrap;
-        scroll-snap-align: start;
-        min-width: 90px;
-      }
-      
-      /* Content spacing - Much larger and more readable */
-      body { font-size: 18px; line-height: 1.7; }
-      h2 { font-size: 26px; margin: 1.5em 0 0.8em 0; line-height: 1.3; }
-      h3 { font-size: 22px; margin: 1.3em 0 0.7em 0; line-height: 1.3; }
-      h4 { font-size: 19px; margin: 1.2em 0 0.6em 0; line-height: 1.3; }
-      p { font-size: 18px; line-height: 1.7; margin: 1em 0; }
-      li { font-size: 18px; line-height: 1.7; margin: 0.5em 0; }
-      .lead { font-size: 19px; line-height: 1.7; color: var(--text); }
-      
-      /* Ensure all text elements are readable */
-      strong { font-size: inherit; }
-      em { font-size: inherit; }
-      sup { font-size: 14px; }
-      code { font-size: 16px; }
-      
-      /* Table improvements for mobile */
-      .table-wrap {
-        font-size: 16px;
-        border-radius: 8px;
-        margin: 20px 0;
-      }
-      table { min-width: 650px; } /* Allow horizontal scrolling */
-      th, td { 
-        padding: 12px 8px; 
-        font-size: 15px;
-        line-height: 1.5;
-      }
-      th { font-size: 16px; font-weight: 700; }
-      
-      /* KPI cards for mobile */
-      .kpis { 
-        grid-template-columns: 1fr;
-        gap: 12px;
-        margin: 20px 0;
-      }
-      .kpi { 
-        padding: 16px; 
-        text-align: center;
-      }
-      .kpi .label { font-size: 15px; }
-      .kpi .value { font-size: 20px; line-height: 1.3; }
-      
-      /* Pomodoro timer mobile */
-      .pomodoro { 
-        padding: 20px; 
-        text-align: center;
-        margin: 20px 0;
-      }
-      .pomodoro h4 { font-size: 20px; margin: 0 0 12px 0; }
-      #timerDisplay { 
-        font-size: 42px; 
-        margin: 16px 0;
-        line-height: 1.1;
-      }
-      .pom-controls { 
-        justify-content: center; 
-        gap: 12px;
-        margin-top: 16px;
-      }
-      .btn-primary, .btn-secondary {
-        padding: 12px 20px;
-        font-size: 16px;
-      }
-      
-      /* Floating button optimization */
-      .fab { 
-        right: 16px; 
-        bottom: 16px; 
-      }
-      .fab button { 
-        width: 48px; 
-        height: 48px; 
-        font-size: 18px;
-      }
-      
-      /* Touch-friendly spacing */
-      .callout { 
-        padding: 16px 20px; 
-        margin: 20px 0;
-        font-size: 16px;
-        line-height: 1.6;
-      }
-      
-      /* Details/accordion mobile */
-      details { 
-        padding: 12px 16px; 
-        margin: 16px 0;
-      }
-      details summary { 
-        padding: 8px 0; 
-        font-size: 18px;
-        font-weight: 700;
-      }
-      
-      /* Lists more readable */
-      ul, ol { 
-        padding-left: 1.5em; 
-        margin: 1.2em 0;
-      }
-      
-      /* Footer mobile */
-      footer { 
-        padding: 16px 20px; 
-        font-size: 14px;
-      }
-      
-      /* Hide dropdown to avoid duplication */
+      main { padding: 8px 10px }
+      .ctrls { gap: 6px; flex-wrap: wrap }
+      .ctrls input[type="search"] { min-width: 0; width: 100%; flex: 1 1 100% }
+      /* compact tabs */
+      .tablist { gap: 6px; padding: 6px 10px }
+      .tablist button[role="tab"] { padding: 8px 10px; font-weight: 700; font-size: 14px }
+      /* hide dropdown to avoid duplication */
       .tab-dropdown { display: none !important }
-      
-      /* Show mobile hints, hide desktop hints */
-      .desktop-hint { display: none !important }
-      .mobile-hint { display: inline !important; font-size: 16px; }
-    }
-    
-    /* Small phones (320px width) - Still readable */
-    @media (max-width: 360px) {
-      .wrap { padding: 10px 12px }
-      main { padding: 12px 16px }
-      h1.title { font-size: 18px }
-      
-      /* Keep content readable even on small screens */
-      body { font-size: 17px; }
-      h2 { font-size: 24px; }
-      h3 { font-size: 20px; }
-      h4 { font-size: 18px; }
-      p { font-size: 17px; }
-      li { font-size: 17px; }
-      
-      .ctrls button { 
-        padding: 6px 8px;
-        font-size: 13px;
-        min-width: 60px;
-      }
-      .tablist button[role="tab"] { 
-        padding: 6px 8px; 
-        font-size: 13px;
-        min-width: 75px;
-      }
-      th, td { 
-        padding: 10px 6px; 
-        font-size: 14px;
-      }
-      .callout { 
-        padding: 14px 16px; 
-        font-size: 15px;
-      }
     }
   </style>
 </head>
@@ -530,10 +262,7 @@
         <p>The most significant example of this principle is the placement of the gym session. It functions as a "state transition" between the afternoon and evening work blocks. This physical intervention acts as a pattern interrupt, flushing the system with endorphins, increasing blood flow to the brain, and providing a complete mental reset. This transforms the workout from a simple fitness activity into a strategic tool for enhancing cognitive output, ensuring high levels of focus and productivity are maintained throughout the demanding evening work session.</p>
 
         <h3 id="s1-table">Table 1: The Master Schedule <a class="anchor" href="#s1-table">#</a></h3>
-        <div class="callout">
-          <span class="desktop-hint">Hint: This wide table is horizontally scrollable.</span>
-          <span class="mobile-hint" style="display: none;">💡 Swipe left/right to see all days →</span>
-        </div>
+        <div class="callout">Hint: This wide table is horizontally scrollable. On phone, drag sideways.</div>
         <div class="table-wrap" role="region" aria-label="Master Schedule" tabindex="0">
           <table>
             <thead>
@@ -1138,61 +867,6 @@
       // Improve focus ring for keyboard users only
       function handleFirstTab(e){ if(e.key==='Tab'){ document.body.classList.add('user-is-tabbing'); window.removeEventListener('keydown', handleFirstTab) } }
       window.addEventListener('keydown', handleFirstTab);
-
-      // Mobile enhancements
-      function isMobile() {
-        return window.innerWidth <= 640 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      }
-
-      // Auto-scroll active tab into view on mobile
-      function scrollActiveTabIntoView() {
-        if (!isMobile()) return;
-        const activeTab = document.querySelector('[role="tab"][aria-selected="true"]');
-        if (activeTab) {
-          activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }
-      }
-
-      // Enhanced tab activation for mobile
-      const originalActivateTab = activateTab;
-      activateTab = function(id, focusBtn = false) {
-        originalActivateTab(id, focusBtn);
-        // Scroll to active tab on mobile
-        setTimeout(scrollActiveTabIntoView, 100);
-      };
-
-      // Touch feedback for tables on mobile
-      if (isMobile()) {
-        document.querySelectorAll('.table-wrap').forEach(table => {
-          let isScrolling = false;
-          
-          table.addEventListener('touchstart', () => {
-            isScrolling = false;
-          });
-          
-          table.addEventListener('touchmove', () => {
-            isScrolling = true;
-          });
-          
-          // Add visual feedback when scrolling
-          table.addEventListener('scroll', () => {
-            table.style.opacity = '0.9';
-            clearTimeout(table.scrollTimeout);
-            table.scrollTimeout = setTimeout(() => {
-              table.style.opacity = '1';
-            }, 150);
-          });
-        });
-      }
-
-      // Prevent double-tap zoom on buttons
-      document.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('touchend', (e) => {
-          e.preventDefault();
-          // Trigger click after a short delay to ensure proper touch handling
-          setTimeout(() => btn.click(), 10);
-        });
-      });
 
     })();
   </script>
