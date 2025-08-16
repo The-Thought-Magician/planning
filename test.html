@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Lock-In Protocol: A High-Performance Blueprint</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons for UI elements -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Custom styles to complement Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* A light, neutral background */
+        }
+        /* Style for the active tab */
+        .tab-active {
+            background-color: #4f46e5; /* Indigo */
+            color: white;
+            border-color: #4f46e5;
+        }
+        /* Hide content sections by default */
+        .tab-content {
+            display: none;
+        }
+        /* Show the active content section */
+        .tab-content.active {
+            display: block;
+        }
+        /* Custom scrollbar for tables on mobile */
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        /* Highlight the current day in the schedule */
+        .current-day {
+            background-color: #e0e7ff !important; /* Light indigo */
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <!-- Header Section -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">The Lock-In Protocol</h1>
+            <p class="mt-2 text-lg text-gray-600">An Integrated High-Performance Blueprint for Chiranjeet Mishra</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="mb-8 overflow-x-auto pb-2">
+            <div class="flex space-x-2 md:space-x-4 border-b-2 border-gray-200 justify-center">
+                <button class="tab-btn flex-shrink-0 flex items-center space-x-2 py-3 px-4 font-semibold text-gray-600 rounded-t-lg transition-colors duration-300 hover:bg-gray-200" data-tab="introduction">
+                    <i data-lucide="compass"></i>
+                    <span>Introduction</span>
+                </button>
+                <button class="tab-btn flex-shrink-0 flex items-center space-x-2 py-3 px-4 font-semibold text-gray-600 rounded-t-lg transition-colors duration-300 hover:bg-gray-200" data-tab="schedule">
+                    <i data-lucide="calendar-days"></i>
+                    <span>Master Schedule</span>
+                </button>
+                <button class="tab-btn flex-shrink-0 flex items-center space-x-2 py-3 px-4 font-semibold text-gray-600 rounded-t-lg transition-colors duration-300 hover:bg-gray-200" data-tab="productivity">
+                    <i data-lucide="zap"></i>
+                    <span>Productivity</span>
+                </button>
+                <button class="tab-btn flex-shrink-0 flex items-center space-x-2 py-3 px-4 font-semibold text-gray-600 rounded-t-lg transition-colors duration-300 hover:bg-gray-200" data-tab="physical">
+                    <i data-lucide="dumbbell"></i>
+                    <span>Physical Protocol</span>
+                </button>
+                <button class="tab-btn flex-shrink-0 flex items-center space-x-2 py-3 px-4 font-semibold text-gray-600 rounded-t-lg transition-colors duration-300 hover:bg-gray-200" data-tab="nutrition">
+                    <i data-lucide="utensils-crossed"></i>
+                    <span>Nutrition</span>
+                </button>
+                <button class="tab-btn flex-shrink-0 flex items-center space-x-2 py-3 px-4 font-semibold text-gray-600 rounded-t-lg transition-colors duration-300 hover:bg-gray-200" data-tab="directives">
+                    <i data-lucide="target"></i>
+                    <span>Directives</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main>
+            <!-- Introduction Tab -->
+            <section id="introduction" class="tab-content active bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold mb-4 text-indigo-600">Architecting Your Elite Performance Ecosystem</h2>
+                <p class="mb-4 text-gray-700">This document presents a comprehensive, integrated system designed for peak academic, professional, and physical performance. It is not merely a timetable but a holistic blueprint engineered to manage the demanding schedule of a student at the Indian Institute of Technology Kharagpur while pursuing ambitious professional and personal development goals.</p>
+                <div class="grid md:grid-cols-3 gap-6 mt-6">
+                    <div class="bg-indigo-50 p-6 rounded-lg border border-indigo-200">
+                        <h3 class="text-xl font-semibold mb-2 flex items-center"><i data-lucide="check-circle" class="mr-2 text-indigo-500"></i>Disciplined Execution</h3>
+                        <p class="text-gray-600">Adherence to the outlined structure is paramount. Consistency builds momentum and cultivates a state of "flow".</p>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                        <h3 class="text-xl font-semibold mb-2 flex items-center"><i data-lucide="heart-pulse" class="mr-2 text-green-500"></i>Strategic Recovery</h3>
+                        <p class="text-gray-600">Rest, nutrition, and mobility are active, non-negotiable drivers of high performance, sustaining intense cognitive and physical work.</p>
+                    </div>
+                    <div class="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                        <h3 class="text-xl font-semibold mb-2 flex items-center"><i data-lucide="git-merge" class="mr-2 text-yellow-500"></i>Systemic Synergy</h3>
+                        <p class="text-gray-600">The schedule is architected to create positive feedback loops, where each component enhances the others.</p>
+                    </div>
+                </div>
+                <p class="mt-6 text-gray-700">By embracing this structured approach, the objective is to transform a potentially overwhelming set of commitments into a manageable and highly productive operational framework, enabling you to "lock in" and achieve exceptional results across all domains.</p>
+            </section>
+
+            <!-- Master Schedule Tab -->
+            <section id="schedule" class="tab-content bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold mb-4 text-indigo-600">The Master Schedule: Your Hour-by-Hour Framework</h2>
+                <p class="mb-6 text-gray-700">This is the central nervous system of the protocol, built around fixed commitments. It's a tool for energy management, partitioning the day into cognitive "sprints" separated by physical activity or rest to prevent mental fatigue. The gym session acts as a strategic "state transition" to reset mentally and physically for evening work blocks.</p>
+                <div class="table-container overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500 border-collapse">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 rounded-tl-lg">Time Slot</th>
+                                <th scope="col" class="px-6 py-3 day-header" data-day="1">Monday</th>
+                                <th scope="col" class="px-6 py-3 day-header" data-day="2">Tuesday</th>
+                                <th scope="col" class="px-6 py-3 day-header" data-day="3">Wednesday</th>
+                                <th scope="col" class="px-6 py-3 day-header" data-day="4">Thursday</th>
+                                <th scope="col" class="px-6 py-3 day-header" data-day="5">Friday</th>
+                                <th scope="col" class="px-6 py-3 day-header" data-day="6">Saturday</th>
+                                <th scope="col" class="px-6 py-3 rounded-tr-lg day-header" data-day="0">Sunday</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data rows will be dynamically inserted here by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Productivity Tab -->
+            <section id="productivity" class="tab-content bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold mb-4 text-indigo-600">The Productivity Engine: Executing Deep Work</h2>
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-2">The Hybrid Productivity Model</h3>
+                        <p class="text-gray-700 mb-4">A powerful combination of **Time Blocking** for macro-level structure and the **Pomodoro Technique** for micro-level focus. This synergy eliminates decision fatigue and maintains high-intensity effort during long work sessions.</p>
+                        <div class="bg-gray-50 p-4 rounded-lg border">
+                            <h4 class="font-bold">Example 3-Hour Block Execution:</h4>
+                            <ol class="list-decimal list-inside mt-2 text-gray-600">
+                                <li><span class="font-semibold">Block Intention (5 mins):</span> Define specific goals for the session.</li>
+                                <li><span class="font-semibold">Pomodoro Cycles (2.5 hrs):</span> Execute five 25/5-minute Pomodoro cycles.</li>
+                                <li><span class="font-semibold">Wrap-up & Review (25 mins):</span> Review work, document progress, and plan next steps.</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-2">Pre-emptive Task Scoping: The Antidote to "Vibe Coding"</h3>
+                        <p class="text-gray-700">To avoid inefficient, unplanned work, the first 5-10 minutes of every major work block is a non-negotiable **"Pre-Flight Checklist"**. Define 1-3 SMART goals for the session to provide a clear target and eliminate ambiguity.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-2">Managing the "Urgent Task" Buffer</h3>
+                        <p class="text-gray-700">The 2-3 hour buffer for urgent tasks must have a **"Default Task" Protocol**. Pre-assign a list of low-urgency, high-impact tasks (e.g., advanced reading, code refactoring, professional development) to ensure this time is always productive.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Physical Protocol Tab -->
+            <section id="physical" class="tab-content bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold mb-4 text-indigo-600">The Physical Apparatus: Hypertrophy and Recovery</h2>
+                <div class="space-y-10">
+                    <!-- 4-Day Hypertrophy Program -->
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-2">Part 3.1: The 4-Day Hypertrophy Program</h3>
+                        <p class="text-gray-700 mb-4">A 4-Day Upper/Lower Split to maximize muscle growth (hypertrophy) by training each muscle group twice per week. This split optimizes frequency, manages fatigue, and is time-efficient.</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- Workout Tables -->
+                            <div class="bg-gray-50 p-4 rounded-lg border">
+                                <h4 class="font-bold mb-2">Day 1: Upper Body 1 (Push Focus)</h4>
+                                <ul class="text-sm space-y-1">
+                                    <li><strong>Barbell Bench Press:</strong> 4 sets of 8-10 reps</li>
+                                    <li><strong>Incline Dumbbell Press:</strong> 3 sets of 10-12 reps</li>
+                                    <li><strong>Seated Dumbbell Shoulder Press:</strong> 3 sets of 10-12 reps</li>
+                                    <li><strong>Lateral Raises:</strong> 3 sets of 12-15 reps</li>
+                                    <li><strong>Triceps Pushdowns:</strong> 3 sets of 10-12 reps</li>
+                                    <li><strong>Dumbbell Skullcrushers:</strong> 3 sets of 10-12 reps</li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg border">
+                                <h4 class="font-bold mb-2">Day 2: Lower Body 1 (Quad Focus)</h4>
+                                <ul class="text-sm space-y-1">
+                                    <li><strong>Barbell Back Squats:</strong> 4 sets of 8-10 reps</li>
+                                    <li><strong>Leg Press:</strong> 3 sets of 10-15 reps</li>
+                                    <li><strong>Walking Lunges:</strong> 3 sets of 10-12 reps/leg</li>
+                                    <li><strong>Leg Extensions:</strong> 3 sets of 12-15 reps</li>
+                                    <li><strong>Standing Calf Raises:</strong> 4 sets of 15-20 reps</li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg border">
+                                <h4 class="font-bold mb-2">Day 4: Upper Body 2 (Pull Focus)</h4>
+                                <ul class="text-sm space-y-1">
+                                    <li><strong>Pull-Ups (or Lat Pulldowns):</strong> 4 sets of 8-12 reps</li>
+                                    <li><strong>Barbell Rows:</strong> 3 sets of 8-10 reps</li>
+                                    <li><strong>Seated Cable Rows:</strong> 3 sets of 10-12 reps</li>
+                                    <li><strong>Face Pulls:</strong> 3 sets of 15-20 reps</li>
+                                    <li><strong>Barbell Curls:</strong> 3 sets of 10-12 reps</li>
+                                    <li><strong>Hammer Curls:</strong> 3 sets of 10-12 reps</li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg border">
+                                <h4 class="font-bold mb-2">Day 6: Lower Body 2 (Hamstring/Glute Focus)</h4>
+                                <ul class="text-sm space-y-1">
+                                    <li><strong>Romanian Deadlifts:</strong> 4 sets of 8-10 reps</li>
+                                    <li><strong>Bulgarian Split Squats:</strong> 3 sets of 10-12 reps/leg</li>
+                                    <li><strong>Lying Leg Curls:</strong> 3 sets of 12-15 reps</li>
+                                    <li><strong>Glute Bridges/Hip Thrusts:</strong> 3 sets of 10-15 reps</li>
+                                    <li><strong>Seated Calf Raises:</strong> 4 sets of 15-20 reps</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Morning Activation -->
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-2">Part 3.2: Morning Activation Protocol (HIIT)</h3>
+                        <p class="text-gray-700 mb-4">A 15-minute High-Intensity Interval Training (HIIT) session is recommended for superior time efficiency, metabolic boost (afterburn effect), and logistical simplicity.</p>
+                        <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                            <h4 class="font-bold text-blue-800 mb-2">Sample 15-Min Bodyweight HIIT Routine</h4>
+                             <ol class="list-decimal list-inside space-y-2 text-blue-700">
+                                <li><strong>Warm-up (3 mins):</strong> Light jogging, arm circles, leg swings.</li>
+                                <li><strong>Workout (10 mins):</strong> 30s max effort, 30s rest. Complete 2 rounds of:
+                                    <ul class="list-disc list-inside ml-4 mt-1">
+                                        <li>Jumping Jacks</li>
+                                        <li>High Knees</li>
+                                        <li>Burpees</li>
+                                        <li>Mountain Climbers</li>
+                                        <li>Squat Jumps</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Cool-down (2 mins):</strong> Light stretching.</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <!-- Mobility Mandate -->
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-2">Part 3.3: The Mobility Mandate</h3>
+                        <p class="text-gray-700 mb-4">Essential for injury prevention and counteracting the negative effects of prolonged sitting. Includes dynamic morning mobilization and static pre-sleep decompression.</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                <h4 class="font-bold text-green-800 mb-2">Morning Mobilization (Dynamic)</h4>
+                                <ul class="text-sm space-y-1 text-green-700">
+                                    <li><strong>Cat-Cow:</strong> 10 reps</li>
+                                    <li><strong>Thoracic Spine Rotations:</strong> 8 reps/side</li>
+                                    <li><strong>Leg Swings:</strong> 10 reps/side</li>
+                                    <li><strong>Shoulder Rolls:</strong> 10 reps/direction</li>
+                                    <li><strong>Deep Squat Hold:</strong> 30-45 seconds</li>
+                                </ul>
+                            </div>
+                             <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                                <h4 class="font-bold text-purple-800 mb-2">Pre-Sleep Decompression (Static)</h4>
+                                <ul class="text-sm space-y-1 text-purple-700">
+                                    <li><strong>Child's Pose:</strong> 60s hold</li>
+                                    <li><strong>Knees-to-Chest:</strong> 30s hold</li>
+                                    <li><strong>Seated Forward Fold:</strong> 30-45s hold</li>
+                                    <li><strong>Figure Four Stretch:</strong> 30s/side</li>
+                                    <li><strong>Lying Spinal Twist:</strong> 30s/side</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Nutrition Tab -->
+            <section id="nutrition" class="tab-content bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold mb-4 text-indigo-600">The Fueling Strategy: High-Performance Nutrition</h2>
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-2">Supplementation Protocol: Timing for Efficacy</h3>
+                        <ul class="list-disc list-inside space-y-4 text-gray-700">
+                            <li><strong>Creatine Monohydrate (5g):</strong> Consume post-workout on training days for enhanced uptake. On rest days, take with any meal to maintain saturation.</li>
+                            <li><strong>Whey Protein (20-25g):</strong> Take immediately post-workout to kickstart muscle protein synthesis when muscles are most receptive.</li>
+                            <li><strong>Milk:</strong> A powerful recovery drink. Consume post-workout for its mix of whey, casein, and carbs. Also drink pre-sleep for its slow-digesting casein, which mitigates muscle breakdown overnight.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-2">Nutrient Timing: The Two-Stage Recovery Window</h3>
+                        <p class="text-gray-700 mb-4">Exploit the post-workout "anabolic window" for maximum recovery and growth with a two-stage fueling process.</p>
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-1 bg-green-50 p-6 rounded-lg border border-green-200">
+                                <h4 class="font-bold text-green-800 mb-2">Stage 1: Immediate Post-Workout (~6:45 PM)</h4>
+                                <p class="text-green-700">Consume a shake with 1 scoop whey, 5g creatine, and milk/water. This provides a rapid infusion of nutrients to primed muscles.</p>
+                            </div>
+                            <div class="flex-1 bg-blue-50 p-6 rounded-lg border border-blue-200">
+                                <h4 class="font-bold text-blue-800 mb-2">Stage 2: Mess Dinner (~7:45 PM)</h4>
+                                <p class="text-blue-700">Consume a full, balanced meal. This provides complex carbs, additional protein, and micronutrients to sustain the recovery process.</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div>
+                        <h3 class="text-2xl font-semibold mb-2">Sample Daily Nutrition Timeline (Workout Day)</h3>
+                        <div class="relative border-l-2 border-indigo-200 ml-3">
+                            <div class="mb-6 ml-6">
+                                <span class="absolute flex items-center justify-center w-6 h-6 bg-indigo-200 rounded-full -left-3 ring-8 ring-white">
+                                    <i data-lucide="sunrise" class="w-4 h-4 text-indigo-600"></i>
+                                </span>
+                                <h4 class="font-semibold">7:30 AM - Mess Breakfast</h4>
+                                <p class="text-sm text-gray-500">Fuel for morning cognitive blocks.</p>
+                            </div>
+                            <div class="mb-6 ml-6">
+                                <span class="absolute flex items-center justify-center w-6 h-6 bg-indigo-200 rounded-full -left-3 ring-8 ring-white">
+                                    <i data-lucide="sun" class="w-4 h-4 text-indigo-600"></i>
+                                </span>
+                                <h4 class="font-semibold">1:00 PM - Mess Lunch</h4>
+                                <p class="text-sm text-gray-500">Mid-day energy replenishment.</p>
+                            </div>
+                            <div class="mb-6 ml-6">
+                                <span class="absolute flex items-center justify-center w-6 h-6 bg-indigo-200 rounded-full -left-3 ring-8 ring-white">
+                                    <i data-lucide="blender" class="w-4 h-4 text-indigo-600"></i>
+                                </span>
+                                <h4 class="font-semibold">~6:45 PM - Post-Workout Shake</h4>
+                                <p class="text-sm text-gray-500">Stage 1 Recovery: Rapid nutrient delivery.</p>
+                            </div>
+                            <div class="mb-6 ml-6">
+                                <span class="absolute flex items-center justify-center w-6 h-6 bg-indigo-200 rounded-full -left-3 ring-8 ring-white">
+                                    <i data-lucide="utensils" class="w-4 h-4 text-indigo-600"></i>
+                                </span>
+                                <h4 class="font-semibold">~7:45 PM - Mess Dinner</h4>
+                                <p class="text-sm text-gray-500">Stage 2 Recovery: Sustained energy supply.</p>
+                            </div>
+                             <div class="mb-6 ml-6">
+                                <span class="absolute flex items-center justify-center w-6 h-6 bg-indigo-200 rounded-full -left-3 ring-8 ring-white">
+                                    <i data-lucide="drumstick" class="w-4 h-4 text-indigo-600"></i>
+                                </span>
+                                <h4 class="font-semibold">~11:00 PM - Boiled Chicken Meal</h4>
+                                <p class="text-sm text-gray-500">Final protein bolus for overnight anabolism.</p>
+                            </div>
+                            <div class="ml-6">
+                                <span class="absolute flex items-center justify-center w-6 h-6 bg-indigo-200 rounded-full -left-3 ring-8 ring-white">
+                                    <i data-lucide="cup-soda" class="w-4 h-4 text-indigo-600"></i>
+                                </span>
+                                <h4 class="font-semibold">~11:30 PM - Glass of Milk</h4>
+                                <p class="text-sm text-gray-500">Pre-sleep casein for slow-release amino acids.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Directives Tab -->
+            <section id="directives" class="tab-content bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold mb-4 text-indigo-600">Strategic Directives: Mindset & Sustainability</h2>
+                 <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-2">Sleep: A Non-Negotiable Performance Multiplier</h3>
+                        <p class="text-gray-700">With a 5:00 AM wake-up, 7-8 hours of quality sleep is a biological necessity. A consistent bedtime of 11:30 PM to 12:00 AM must be rigorously protected. Sleep is the foundation upon which all cognitive and physical gains are built.</p>
+                    </div>
+                     <div>
+                        <h3 class="text-2xl font-semibold mb-2">The Weekend Protocol: Strategic De-loading</h3>
+                        <p class="text-gray-700 mb-4">Weekends are for strategic recovery and preparation, not unstructured downtime. Saturday balances project work with crucial social time, while Sunday is a dedicated "De-load and Planning Day."</p>
+                        <div class="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                             <h4 class="font-bold text-yellow-800 mb-2">The Weekly Review Process (Sunday)</h4>
+                             <p class="text-yellow-700 mb-2">This 30-minute block is the primary mechanism for adaptation. Ask three critical questions:</p>
+                             <ol class="list-decimal list-inside text-yellow-700">
+                                 <li>What worked well?</li>
+                                 <li>What didn't work? Where were the points of friction?</li>
+                                 <li>What will I adjust for the upcoming week?</li>
+                             </ol>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-2">The Principle of "Intentional Imbalance"</h3>
+                        <p class="text-gray-700">Acknowledge that this schedule is a temporary, strategic imbalance chosen to achieve extraordinary goals in a compressed timeframe. This mindset helps manage expectations and reinforces the importance of scheduled recovery and social time.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="text-center mt-12">
+            <p class="text-gray-500 text-sm">&copy; 2025 The Lock-In Protocol. A blueprint for peak performance.</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- DATA FOR THE MASTER SCHEDULE ---
+        const scheduleData = [
+            { time: "5:00 - 5:30 AM", tasks: Array(7).fill("Wake Up, Hygiene") },
+            { time: "5:30 - 5:45 AM", tasks: [...Array(6).fill("Morning Activation: HIIT"), "Active Recovery (Walk)"] },
+            { time: "5:45 - 6:00 AM", tasks: [...Array(6).fill("Morning Mobilization"), "Full Body Stretch"] },
+            { time: "6:00 - 6:15 AM", tasks: Array(7).fill("Mindfulness/Meditation") },
+            { time: "6:15 - 7:30 AM", tasks: [...Array(6).fill("Deep Work: DSA Problems"), "Weekly Review & Planning"] },
+            { time: "7:30 - 8:00 AM", tasks: Array(7).fill("Mess Breakfast") },
+            { time: "8:00 - 8:50 AM", tasks: ["Deep Work: Dentensur.com", "Travel to Class", "Deep Work: Dentensur.com", "Travel to Class", "Deep Work: Dentensur.com", "Deep Work: AI Bard Project", "Free/Social Time"] },
+            { time: "8:50 - 9:00 AM", tasks: ["Travel to Class", "ME61011 Class", "Travel to Class", "ME61011 Class", "Travel to Class", "Deep Work: AI Bard Project", "Free/Social Time"] },
+            { time: "9:00 - 9:55 AM", tasks: ["Post-Class Study: ME61011", "ME61011 Class", "ME60231 Class", "ME61011 Class", "ME60231 Class", "Deep Work: AI Bard Project", "Free/Social Time"] },
+            { time: "10:00 - 10:55 AM", tasks: ["Deep Work: Dentensur.com", "ME61011 Class", "ME60231 Class", "Post-Class Study: ME61011", "ME60231 Class", "Deep Work: AI Bard Project", "Free/Social Time"] },
+            { time: "11:00 - 11:55 AM", tasks: ["Deep Work: Dentensur.com", "Post-Class Study: ME61011", "Post-Class Study: ME60231", "ME60231 Class", "Post-Class Study: ME60231", "Deep Work: AI Bard Project", "Free/Social Time"] },
+            { time: "12:00 - 12:55 PM", tasks: ["ME61011 Class", "Post-Class Study: ME61011", "ME60231 Class", "ME60231 Class", "Travel from Class", "Deep Work: AI Bard Project", "Free/Social Time"] },
+            { time: "1:00 - 2:00 PM", tasks: ["Post-Class Study: ME61011", "Mess Lunch", "Post-Class Study: ME60231", "Post-Class Study: ME60231", "Mess Lunch", "Mess Lunch", "Mess Lunch"] },
+            { time: "2:00 - 3:00 PM", tasks: ["Mess Lunch", "Deep Work: Dentensur.com", "Mess Lunch", "Mess Lunch", "Deep Work: Dentensur.com", "Buffer/Misc. Tasks", "Buffer/Misc. Tasks"] },
+            { time: "3:00 - 4:30 PM", tasks: ["Deep Work: AI Bard Project", "Deep Work: Dentensur.com", "Deep Work: AI Bard Project", "Deep Work: AI Bard Project", "Deep Work: Dentensur.com", "Buffer/Misc. Tasks", "Buffer/Misc. Tasks"] },
+            { time: "4:30 - 5:00 PM", tasks: ["Prep for Gym", "Prep for Gym", "Buffer/Misc. Tasks", "Prep for Gym", "Buffer/Misc. Tasks", "Prep for Gym", "Buffer/Misc. Tasks"] },
+            { time: "5:00 - 6:30 PM", tasks: ["<strong>GYM: Upper Body 1</strong>", "<strong>GYM: Lower Body 1</strong>", "Deep Work: AI Bard Project", "<strong>GYM: Upper Body 2</strong>", "Deep Work: AI Bard Project", "<strong>GYM: Lower Body 2</strong>", "Free/Social Time"] },
+            { time: "6:30 - 7:30 PM", tasks: ["Post-Workout Transition", "Post-Workout Transition", "Deep Work: AI Bard Project", "Post-Workout Transition", "Deep Work: AI Bard Project", "Post-Workout Transition", "Free/Social Time"] },
+            { time: "7:30 - 8:15 PM", tasks: Array(7).fill("Mess Dinner") },
+            { time: "8:15 - 8:30 PM", tasks: [...Array(5).fill("Transition to Work"), "Free/Social Time", "Free/Social Time"] },
+            { time: "8:30 - 11:00 PM", tasks: [...Array(5).fill("Deep Work: NurtureBeast"), "Free/Social Time", "Free/Social Time"] },
+            { time: "11:00 - 11:30 PM", tasks: [...Array(5).fill("Boiled Chicken Meal"), "Free/Social Time", "Free/Social Time"] },
+            { time: "11:30 - 11:45 PM", tasks: Array(7).fill("Pre-Sleep Milk") },
+            { time: "11:45 - 12:00 AM", tasks: Array(7).fill("Pre-Sleep Decompression") },
+            { time: "12:00 AM", tasks: Array(7).fill("<strong>SLEEP</strong>") },
+        ];
+
+        // --- JAVASCRIPT LOGIC ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('.tab-content');
+            const scheduleTableBody = document.querySelector('#schedule table tbody');
+
+            // --- Function to populate the schedule table ---
+            function populateSchedule() {
+                scheduleData.forEach((rowData, index) => {
+                    const row = document.createElement('tr');
+                    row.className = 'bg-white border-b hover:bg-gray-50';
+                    
+                    // Time slot cell
+                    const timeCell = document.createElement('th');
+                    timeCell.scope = 'row';
+                    timeCell.className = 'px-6 py-4 font-medium text-gray-900 whitespace-nowrap';
+                    timeCell.innerHTML = rowData.time;
+                    row.appendChild(timeCell);
+
+                    // Task cells for each day
+                    rowData.tasks.forEach((task, dayIndex) => {
+                        const taskCell = document.createElement('td');
+                        taskCell.className = 'px-6 py-4';
+                        taskCell.innerHTML = task;
+                        taskCell.setAttribute('data-day', (dayIndex + 1) % 7); // Monday=1...Sunday=0
+                        row.appendChild(taskCell);
+                    });
+                    
+                    scheduleTableBody.appendChild(row);
+                });
+            }
+
+            // --- Function to highlight the current day ---
+            function highlightCurrentDay() {
+                const today = new Date().getDay(); // Sunday = 0, Monday = 1, etc.
+                const headers = document.querySelectorAll('.day-header');
+                const cells = document.querySelectorAll(`#schedule td[data-day="${today}"]`);
+                
+                headers.forEach(header => {
+                    if(header.getAttribute('data-day') == today) {
+                        header.classList.add('current-day');
+                    }
+                });
+
+                cells.forEach(cell => {
+                    cell.classList.add('current-day');
+                });
+            }
+
+            // --- Tab switching logic ---
+            function switchTab(tabId) {
+                // Update button styles
+                tabs.forEach(tab => {
+                    if (tab.dataset.tab === tabId) {
+                        tab.classList.add('tab-active');
+                    } else {
+                        tab.classList.remove('tab-active');
+                    }
+                });
+                // Show/hide content
+                contents.forEach(content => {
+                    if (content.id === tabId) {
+                        content.classList.add('active');
+                    } else {
+                        content.classList.remove('active');
+                    }
+                });
+            }
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    switchTab(tab.dataset.tab);
+                });
+            });
+
+            // --- Initial setup ---
+            populateSchedule();
+            highlightCurrentDay();
+            switchTab('introduction'); // Start on the introduction tab
+            lucide.createIcons(); // Initialize Lucide icons
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Lock-In Protocol – Interactive Blueprint</title>
+  <meta name="description" content="The Lock-In Protocol: An Integrated High-Performance Blueprint for Chiranjeet Mishra – interactive, mobile-friendly, and printable." />
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --panel: #0f1520;
+      --text: #e6edf3;
+      --muted: #9fb1c1;
+      --accent: #5cc8ff;
+      --accent-2: #7ee787;
+      --warning: #f2cc60;
+      --danger: #ff7b72;
+      --border: #243041;
+      --chip: #152030;
+      --mark: #fff2a8;
+      --link: #7aa2ff;
+      --shadow: 0 6px 24px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.22);
+    }
+    [data-theme="light"] {
+      --bg: #f7fafc;
+      --panel: #ffffff;
+      --text: #1a202c;
+      --muted: #4a5568;
+      --accent: #0ea5e9;
+      --accent-2: #16a34a;
+      --warning: #b45309;
+      --danger: #dc2626;
+      --border: #e2e8f0;
+      --chip: #eef2f7;
+      --mark: #fff59d;
+      --link: #2563eb;
+      --shadow: 0 6px 20px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.06);
+    }
+    * { box-sizing: border-box }
+    html, body { height: 100% }
+    body {
+      margin: 0;
+      font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 20% -10%, #123 0, transparent 60%),
+                  radial-gradient(1000px 500px at 80% -10%, #021 0, transparent 60%),
+                  var(--bg);
+    }
+    a { color: var(--link); text-decoration: none }
+    a:hover { text-decoration: underline }
+
+    /* Layout */
+    .app {
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      min-height: 100svh;
+    }
+    header.topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: saturate(130%) blur(6px);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 12px 16px }
+    .topbar-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap }
+    h1.title { font-size: clamp(18px, 2.4vw, 24px); margin: 0; letter-spacing: 0.2px }
+    .badge { padding: 2px 8px; border-radius: 999px; background: var(--chip); color: var(--muted); font-size: 12px; border: 1px solid var(--border) }
+    .spacer { flex: 1 }
+    .ctrls { display: flex; gap: 8px; align-items: center }
+    .ctrls button, .ctrls .select-like {
+      background: var(--chip); color: var(--text); border: 1px solid var(--border);
+      border-radius: 10px; padding: 8px 10px; font-weight: 600; cursor: pointer
+    }
+    .ctrls button:hover { filter: brightness(1.06) }
+    .ctrls input[type="search"] {
+      background: var(--chip); color: var(--text); border: 1px solid var(--border);
+      border-radius: 10px; padding: 8px 10px; min-width: 220px
+    }
+    .ctrls .select-like { display: none }
+
+    nav.tabs {
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--panel) 85%, transparent), transparent);
+    }
+    .tablist {
+      display: flex; gap: 8px; overflow-x: auto; padding: 8px 16px; scrollbar-width: thin
+    }
+    .tablist button[role="tab"] {
+      background: var(--chip); color: var(--text); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 12px; font-weight: 700; white-space: nowrap; cursor: pointer;
+    }
+    .tablist button[aria-selected="true"] { outline: 2px solid var(--accent); box-shadow: inset 0 -2px 0 var(--accent) }
+
+    main { padding: 16px }
+    .panel {
+      display: none; animation: fadeIn 200ms ease-out both
+    }
+    .panel.active { display: block }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: none } }
+
+    /* Typography & content */
+    h2, h3, h4 { margin-top: 1.2em; margin-bottom: 0.6em }
+    h2 { font-size: clamp(20px, 2.6vw, 26px) }
+    h3 { font-size: clamp(18px, 2.2vw, 22px) }
+    h4 { font-size: clamp(16px, 2vw, 19px) }
+    p { margin: 0.6em 0 }
+    ul, ol { padding-left: 1.2em }
+    .lead { color: var(--muted) }
+    .callout {
+      border: 1px solid var(--border); border-left: 4px solid var(--accent);
+      background: color-mix(in srgb, var(--panel) 85%, transparent);
+      padding: 12px 14px; border-radius: 8px; margin: 12px 0
+    }
+    .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px }
+    .kpi { border: 1px solid var(--border); background: var(--panel); border-radius: 10px; padding: 12px }
+    .kpi .label { color: var(--muted); font-size: 13px }
+    .kpi .value { font-size: 20px; font-weight: 800 }
+
+    /* Tables */
+    .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); box-shadow: var(--shadow); margin: 14px 0 }
+    table { width: 100%; border-collapse: collapse; min-width: 720px }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top }
+    th { text-align: left; color: var(--muted); font-weight: 700; background: color-mix(in srgb, var(--panel) 92%, transparent) }
+    tr:nth-child(even) td { background: color-mix(in srgb, var(--panel) 88%, transparent) }
+
+    /* Details accordion for subsections */
+    details { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; background: var(--panel); margin: 12px 0 }
+    details > summary { cursor: pointer; font-weight: 700 }
+    details[open] { outline: 2px solid color-mix(in srgb, var(--accent) 40%, transparent) }
+
+    /* Utility */
+    .muted { color: var(--muted) }
+    mark { background: var(--mark); color: inherit; padding: 0 2px; border-radius: 2px }
+    .anchor { opacity: 0; margin-left: 8px; font-size: 0.9em }
+    h2:hover .anchor, h3:hover .anchor, h4:hover .anchor { opacity: 1 }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding: 12px 16px; color: var(--muted) }
+
+    /* Floating buttons */
+    .fab {
+      position: fixed; right: 16px; bottom: 16px; display: grid; gap: 10px; z-index: 40
+    }
+    .fab button { width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--text); box-shadow: var(--shadow); cursor: pointer }
+    .fab button:hover { filter: brightness(1.06) }
+
+    /* Print styles */
+    @media print {
+      header.topbar, nav.tabs, .fab { display: none !important }
+      body { background: white; color: black }
+      .panel { display: block !important }
+    }
+
+    /* Small screens */
+    @media (max-width: 640px) {
+      .ctrls .select-like { display: inline-flex; align-items: center }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <header class="topbar" role="banner">
+      <div class="wrap topbar-row">
+        <h1 class="title">The Lock-In Protocol <span class="badge">Interactive</span></h1>
+        <span class="muted">by Chiranjeet Mishra</span>
+        <div class="spacer"></div>
+        <div class="ctrls" role="toolbar" aria-label="Page controls">
+          <input id="search" type="search" placeholder="Search in tab… (/)" aria-label="Search" />
+          <button id="clearSearch" title="Clear search">Clear</button>
+          <button id="expandAll" title="Expand all sections">Expand</button>
+          <button id="collapseAll" title="Collapse all sections">Collapse</button>
+          <button id="themeToggle" title="Toggle theme">Dark/Light</button>
+          <button id="printBtn" title="Print / Save PDF">Print</button>
+          <button id="tabSelect" class="select-like" title="Switch tab">Tab ▾</button>
+        </div>
+      </div>
+      <nav class="tabs" aria-label="Sections">
+        <div class="tablist" role="tablist" aria-orientation="horizontal">
+          <button role="tab" aria-selected="true" aria-controls="tab-intro" id="tabbtn-intro">Introduction</button>
+          <button role="tab" aria-selected="false" aria-controls="tab-s1" id="tabbtn-s1">Section 1 • Master Schedule</button>
+          <button role="tab" aria-selected="false" aria-controls="tab-s2" id="tabbtn-s2">Section 2 • Productivity</button>
+          <button role="tab" aria-selected="false" aria-controls="tab-s3" id="tabbtn-s3">Section 3 • Physical</button>
+          <button role="tab" aria-selected="false" aria-controls="tab-s4" id="tabbtn-s4">Section 4 • Nutrition</button>
+          <button role="tab" aria-selected="false" aria-controls="tab-s5" id="tabbtn-s5">Section 5 • Strategy</button>
+          <button role="tab" aria-selected="false" aria-controls="tab-conclusion" id="tabbtn-conclusion">Conclusion</button>
+          <button role="tab" aria-selected="false" aria-controls="tab-works" id="tabbtn-works">Works Cited</button>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <!-- Introduction -->
+      <section class="panel active" id="tab-intro" role="tabpanel" aria-labelledby="tabbtn-intro">
+        <h2 id="intro">The Lock-In Protocol: An Integrated High-Performance Blueprint for Chiranjeet Mishra <a class="anchor" href="#intro">#</a></h2>
+        <p class="lead">This document presents a comprehensive, integrated system designed for peak academic, professional, and physical performance. It is not merely a timetable but a holistic blueprint engineered to manage the demanding schedule of a student at the Indian Institute of Technology Kharagpur <sup>1</sup> while pursuing ambitious professional and personal development goals. The success of this protocol hinges on the understanding that each component—work, study, fitness, nutrition, and rest—is designed to support and enhance the others, creating a state of systemic synergy rather than competing for finite resources.</p>
+        <p>The foundational principles of this protocol are:</p>
+        <ul>
+          <li><strong>Disciplined Execution:</strong> Adherence to the outlined structure is paramount. Consistency builds momentum, reduces decision fatigue, and ultimately cultivates a state of "flow" where high-quality output becomes habitual.</li>
+          <li><strong>Strategic Recovery:</strong> Rest, nutrition, and mobility are not treated as passive activities but as active, non-negotiable drivers of high performance. They are the essential inputs that sustain the capacity for intense cognitive and physical work.</li>
+          <li><strong>Systemic Synergy:</strong> The schedule is architected to create positive feedback loops. For example, physical training is strategically placed to enhance cognitive function for subsequent work blocks, and nutrient timing is synchronized with physical exertion to maximize physiological adaptation.</li>
+        </ul>
+        <p>By embracing this structured approach, the objective is to transform a potentially overwhelming set of commitments into a manageable and highly productive operational framework, enabling the user to "lock in" and achieve exceptional results across all domains.</p>
+
+        <div class="kpis" aria-label="Quick summary">
+          <div class="kpi"><div class="label">Core pillars</div><div class="value">Study • Work • Training • Nutrition • Sleep</div></div>
+          <div class="kpi"><div class="label">Execution model</div><div class="value">Time Blocking + Pomodoro</div></div>
+          <div class="kpi"><div class="label">Training split</div><div class="value">4-Day Upper/Lower</div></div>
+          <div class="kpi"><div class="label">Daily anchors</div><div class="value">5:00 AM wake • 12:00 AM sleep</div></div>
+        </div>
+      </section>
+
+      <!-- Section 1: Master Schedule -->
+      <section class="panel" id="tab-s1" role="tabpanel" aria-labelledby="tabbtn-s1">
+        <h2 id="s1">Section 1: The Master Schedule: Your Hour-by-Hour Operational Framework <a class="anchor" href="#s1">#</a></h2>
+        <p>This section presents the master schedule, the central nervous system of the Lock-In Protocol. Its construction is anchored around fixed commitments—university classes, non-negotiable work hours, and hostel mess timings. All other activities are then strategically placed into optimized slots to manage energy, maximize focus, and create a logical daily workflow. Travel time of 20 minutes for each class block has been explicitly factored in.</p>
+        <p>The schedule itself is a powerful tool for energy management. Rather than being a simple list of tasks, its structure is designed to modulate cognitive and physical demands throughout the day. The day is intentionally partitioned into distinct cognitive "sprints" separated by periods of physical activity or strategic rest. This prevents the cumulative mental fatigue that arises from prolonged, uninterrupted screen time and deep cognitive work, such as coding and advanced engineering studies.</p>
+        <p>The most significant example of this principle is the placement of the gym session. It functions as a "state transition" between the afternoon and evening work blocks. This physical intervention acts as a pattern interrupt, flushing the system with endorphins, increasing blood flow to the brain, and providing a complete mental reset. This transforms the workout from a simple fitness activity into a strategic tool for enhancing cognitive output, ensuring high levels of focus and productivity are maintained throughout the demanding evening work session.</p>
+
+        <h3 id="s1-table">Table 1: The Master Schedule <a class="anchor" href="#s1-table">#</a></h3>
+        <div class="callout">Hint: This wide table is horizontally scrollable. On phone, drag sideways.</div>
+        <div class="table-wrap" role="region" aria-label="Master Schedule" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th>Time Slot</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+                <th>Sunday</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>5:00 - 5:30 AM</strong></td><td>Wake Up, Hygiene</td><td>Wake Up, Hygiene</td><td>Wake Up, Hygiene</td><td>Wake Up, Hygiene</td><td>Wake Up, Hygiene</td><td>Wake Up, Hygiene</td><td>Wake Up, Hygiene</td></tr>
+              <tr><td><strong>5:30 - 5:45 AM</strong></td><td>Morning Activation: HIIT</td><td>Morning Activation: HIIT</td><td>Morning Activation: HIIT</td><td>Morning Activation: HIIT</td><td>Morning Activation: HIIT</td><td>Morning Activation: HIIT</td><td>Active Recovery (Walk)</td></tr>
+              <tr><td><strong>5:45 - 6:00 AM</strong></td><td>Morning Mobilization</td><td>Morning Mobilization</td><td>Morning Mobilization</td><td>Morning Mobilization</td><td>Morning Mobilization</td><td>Morning Mobilization</td><td>Full Body Stretch</td></tr>
+              <tr><td><strong>6:00 - 6:15 AM</strong></td><td>Mindfulness/Meditation</td><td>Mindfulness/Meditation</td><td>Mindfulness/Meditation</td><td>Mindfulness/Meditation</td><td>Mindfulness/Meditation</td><td>Mindfulness/Meditation</td><td>Mindfulness/Meditation</td></tr>
+              <tr><td><strong>6:15 - 7:30 AM</strong></td><td>Deep Work: DSA Problems</td><td>Deep Work: DSA Problems</td><td>Deep Work: DSA Problems</td><td>Deep Work: DSA Problems</td><td>Deep Work: DSA Problems</td><td>Deep Work: DSA Problems</td><td>Weekly Review &amp; Planning</td></tr>
+              <tr><td><strong>7:30 - 8:00 AM</strong></td><td>Mess Breakfast</td><td>Mess Breakfast</td><td>Mess Breakfast</td><td>Mess Breakfast</td><td>Mess Breakfast</td><td>Mess Breakfast</td><td>Mess Breakfast</td></tr>
+              <tr><td><strong>8:00 - 8:50 AM</strong></td><td>Deep Work: Dentensur.com</td><td>Travel to Class</td><td>Deep Work: Dentensur.com</td><td>Travel to Class</td><td>Deep Work: Dentensur.com</td><td>Deep Work: AI Bard Project</td><td>Free/Social Time</td></tr>
+              <tr><td><strong>8:50 - 9:00 AM</strong></td><td>Travel to Class</td><td>ME61011 Class</td><td>Travel to Class</td><td>ME61011 Class</td><td>Travel to Class</td><td>Deep Work: AI Bard Project</td><td>Free/Social Time</td></tr>
+              <tr><td><strong>9:00 - 9:55 AM</strong></td><td>Post-Class Study: ME61011</td><td>ME61011 Class</td><td>ME60231 Class</td><td>ME61011 Class</td><td>ME60231 Class</td><td>Deep Work: AI Bard Project</td><td>Free/Social Time</td></tr>
+              <tr><td><strong>10:00 - 10:55 AM</strong></td><td>Deep Work: Dentensur.com</td><td>ME61011 Class</td><td>ME60231 Class</td><td>Post-Class Study: ME61011</td><td>ME60231 Class</td><td>Deep Work: AI Bard Project</td><td>Free/Social Time</td></tr>
+              <tr><td><strong>11:00 - 11:55 AM</strong></td><td>Deep Work: Dentensur.com</td><td>Post-Class Study: ME61011</td><td>Post-Class Study: ME60231</td><td>ME60231 Class</td><td>Post-Class Study: ME60231</td><td>Deep Work: AI Bard Project</td><td>Free/Social Time</td></tr>
+              <tr><td><strong>12:00 - 12:55 PM</strong></td><td>ME61011 Class</td><td>Post-Class Study: ME61011</td><td>ME60231 Class</td><td>ME60231 Class</td><td>Travel from Class</td><td>Deep Work: AI Bard Project</td><td>Free/Social Time</td></tr>
+              <tr><td><strong>1:00 - 2:00 PM</strong></td><td>Post-Class Study: ME61011</td><td>Mess Lunch</td><td>Post-Class Study: ME60231</td><td>Post-Class Study: ME60231</td><td>Mess Lunch</td><td>Mess Lunch</td><td>Mess Lunch</td></tr>
+              <tr><td><strong>2:00 - 3:00 PM</strong></td><td>Mess Lunch</td><td>Deep Work: Dentensur.com</td><td>Mess Lunch</td><td>Mess Lunch</td><td>Deep Work: Dentensur.com</td><td>Buffer/Misc. Tasks</td><td>Buffer/Misc. Tasks</td></tr>
+              <tr><td><strong>3:00 - 4:30 PM</strong></td><td>Deep Work: AI Bard Project</td><td>Deep Work: Dentensur.com</td><td>Deep Work: AI Bard Project</td><td>Deep Work: AI Bard Project</td><td>Deep Work: Dentensur.com</td><td>Buffer/Misc. Tasks</td><td>Buffer/Misc. Tasks</td></tr>
+              <tr><td><strong>4:30 - 5:00 PM</strong></td><td>Prep for Gym</td><td>Prep for Gym</td><td>Buffer/Misc. Tasks</td><td>Prep for Gym</td><td>Buffer/Misc. Tasks</td><td>Prep for Gym</td><td>Buffer/Misc. Tasks</td></tr>
+              <tr><td><strong>5:00 - 6:30 PM</strong></td><td><strong>GYM: Upper Body 1</strong></td><td><strong>GYM: Lower Body 1</strong></td><td>Deep Work: AI Bard Project</td><td><strong>GYM: Upper Body 2</strong></td><td>Deep Work: AI Bard Project</td><td><strong>GYM: Lower Body 2</strong></td><td>Free/Social Time</td></tr>
+              <tr><td><strong>6:30 - 7:30 PM</strong></td><td>Post-Workout Transition</td><td>Post-Workout Transition</td><td>Deep Work: AI Bard Project</td><td>Post-Workout Transition</td><td>Deep Work: AI Bard Project</td><td>Post-Workout Transition</td><td>Free/Social Time</td></tr>
+              <tr><td><strong>7:30 - 8:15 PM</strong></td><td>Mess Dinner</td><td>Mess Dinner</td><td>Mess Dinner</td><td>Mess Dinner</td><td>Mess Dinner</td><td>Mess Dinner</td><td>Mess Dinner</td></tr>
+              <tr><td><strong>8:15 - 8:30 PM</strong></td><td>Transition to Work</td><td>Transition to Work</td><td>Transition to Work</td><td>Transition to Work</td><td>Transition to Work</td><td>Free/Social Time</td><td>Free/Social Time</td></tr>
+              <tr><td><strong>8:30 - 11:00 PM</strong></td><td>Deep Work: NurtureBeast</td><td>Deep Work: NurtureBeast</td><td>Deep Work: NurtureBeast</td><td>Deep Work: NurtureBeast</td><td>Deep Work: NurtureBeast</td><td>Free/Social Time</td><td>Free/Social Time</td></tr>
+              <tr><td><strong>11:00 - 11:30 PM</strong></td><td>Boiled Chicken Meal</td><td>Boiled Chicken Meal</td><td>Boiled Chicken Meal</td><td>Boiled Chicken Meal</td><td>Boiled Chicken Meal</td><td>Free/Social Time</td><td>Free/Social Time</td></tr>
+              <tr><td><strong>11:30 - 11:45 PM</strong></td><td>Pre-Sleep Milk</td><td>Pre-Sleep Milk</td><td>Pre-Sleep Milk</td><td>Pre-Sleep Milk</td><td>Pre-Sleep Milk</td><td>Pre-Sleep Milk</td><td>Pre-Sleep Milk</td></tr>
+              <tr><td><strong>11:45 - 12:00 AM</strong></td><td>Pre-Sleep Decompression</td><td>Pre-Sleep Decompression</td><td>Pre-Sleep Decompression</td><td>Pre-Sleep Decompression</td><td>Pre-Sleep Decompression</td><td>Pre-Sleep Decompression</td><td>Pre-Sleep Decompression</td></tr>
+              <tr><td><strong>12:00 AM</strong></td><td><strong>SLEEP</strong></td><td><strong>SLEEP</strong></td><td><strong>SLEEP</strong></td><td><strong>SLEEP</strong></td><td><strong>SLEEP</strong></td><td><strong>SLEEP</strong></td><td><strong>SLEEP</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Section 2: Productivity Engine -->
+      <section class="panel" id="tab-s2" role="tabpanel" aria-labelledby="tabbtn-s2">
+        <h2 id="s2">Section 2: The Productivity Engine: Executing Deep Work with Precision <a class="anchor" href="#s2">#</a></h2>
+        <p>Simply allocating time is insufficient; maximizing the quality of output within that time is essential. This section details a methodological framework for executing deep work with precision, directly addressing the need to move beyond unstructured "vibe coding" and toward planned, high-intensity effort.</p>
+
+        <h3 id="s2-hybrid">The Hybrid Productivity Model: Time Blocking + Pomodoro Technique <a class="anchor" href="#s2-hybrid">#</a></h3>
+        <p>The Master Schedule is built on the principle of <strong>Time Blocking</strong>, where every hour of the day is assigned a specific purpose.<sup>2</sup> This macro-level structure provides clarity, eliminates decision fatigue about what to work on next, and ensures that all major priorities—from coursework to company work to content creation—receive dedicated, uninterrupted attention.<sup>3</sup></p>
+        <p>Within these larger time blocks, a micro-focus strategy is implemented: the <strong>Pomodoro Technique</strong>. This involves breaking work into focused 25-minute intervals separated by 5-minute breaks. This cycle is repeated, with a longer 15-30 minute break after four "Pomodoros".<sup>3</sup> This technique is exceptionally effective for maintaining high-intensity focus during long, demanding tasks like coding or studying. The frequent, short breaks prevent mental burnout and keep the mind fresh, making it easier to sustain effort over a multi-hour block.<sup>2</sup></p>
+        <p>The synergy of these two methods provides a powerful framework for productivity.<sup>2</sup> For example, the 3-hour block for "Dentensur.com" would be executed as follows:</p>
+        <ol>
+          <li><strong>Block Intention (5 mins):</strong> Define the specific goals for the session.</li>
+          <li><strong>Pomodoro Cycles (2.5 hrs):</strong> Execute five 25/5-minute Pomodoro cycles.</li>
+          <li><strong>Wrap-up &amp; Review (25 mins):</strong> Use the final Pomodoro to review the work completed, document progress, and plan the next steps for the following day's session.</li>
+        </ol>
+
+        <h3 id="s2-scope">Pre-emptive Task Scoping: The Antidote to "Vibe Coding" <a class="anchor" href="#s2-scope">#</a></h3>
+        <p>The desire to avoid "vibe coding" indicates an awareness that unplanned work is inherently inefficient. Ambiguous goals lead to context switching, rework, and wasted cognitive energy, which are direct threats to the viability of this demanding schedule. The Pomodoro technique manages the <em>execution</em> of work, but it does not define <em>what</em> work should be done.</p>
+        <p>To solve this, the first 5-10 minutes of every major work block (Dentensur, NurtureBeast, AI Bard) must be a non-negotiable <strong>"Pre-Flight Checklist"</strong>. This involves defining 1-3 specific, measurable, achievable, relevant, and time-bound (SMART) goals for that session. Instead of a vague goal like "work on The AI Bard project," a scoped goal would be "Implement the user authentication API endpoint using JWT and write corresponding unit tests." This small, upfront investment in planning provides a clear target, eliminates ambiguity, and allows for immediate, focused execution for the remainder of the block.</p>
+
+        <h3 id="s2-buffer">Managing the "Urgent Task" Buffer <a class="anchor" href="#s2-buffer">#</a></h3>
+        <p>An unstructured 2-3 hour buffer for "urgent tasks" is a vulnerability in any schedule. When no urgent task materializes, this time is often lost to indecision or low-value activities. To counter this, the buffer block must have a <strong>"Default Task" Protocol</strong>. This involves pre-assigning a list of low-urgency, high-impact tasks that can be worked on by default. Examples include:</p>
+        <ul>
+          <li>Advanced reading for ME60231 or ME61011.</li>
+          <li>High-level system architecture planning for the next "AI Bard" project.</li>
+          <li>Refactoring old code, improving project documentation, or exploring new technologies.</li>
+          <li>Professional development, such as updating a portfolio or professional networking.</li>
+        </ul>
+        <p>This protocol ensures that the buffer time is always productive. If a genuine urgent task arises, the default task can be immediately superseded without disrupting the core schedule or causing mental friction.</p>
+      </section>
+
+      <!-- Section 3: Physical Apparatus -->
+      <section class="panel" id="tab-s3" role="tabpanel" aria-labelledby="tabbtn-s3">
+        <h2 id="s3">Section 3: The Physical Apparatus: A Scientific Approach to Hypertrophy and Recovery <a class="anchor" href="#s3">#</a></h2>
+        <p>Physical training is not an isolated activity but a critical pillar supporting cognitive function, stress management, and long-term health. This section details a comprehensive physical protocol designed for muscle hypertrophy, cardiovascular health, and injury prevention.</p>
+
+        <h3 id="s3-41">Part 3.1: The 4-Day Hypertrophy Program <a class="anchor" href="#s3-41">#</a></h3>
+        <p>The primary goal is to achieve "pumped muscles," which corresponds to sarcoplasmic hypertrophy—increasing the volume of fluid, glycogen, and other non-contractile components within the muscle cell. This is best achieved through moderate-to-high repetition ranges and training volume.</p>
+        <p>The recommended training split is a <strong>4-Day Upper/Lower Split</strong>. This structure is superior to other common splits for several reasons in this specific context:</p>
+        <ol>
+          <li><strong>Optimal Frequency:</strong> It allows each major muscle group to be trained twice per week. Research indicates that training a muscle group 2-3 times per week is more effective for maximizing hypertrophy compared to once-a-week training.<sup>4</sup></li>
+          <li><strong>Recovery Management:</strong> By splitting the body into upper and lower halves, it effectively manages systemic fatigue. This is crucial given the high cognitive load and limited recovery resources of the overall schedule. It avoids the significant central nervous system fatigue that can accompany high-frequency full-body workouts.<sup>5</sup></li>
+          <li><strong>Time Efficiency:</strong> The workouts are focused and can be completed within a 60-75 minute window, fitting perfectly into the allotted 5:00-6:30 PM time slot.</li>
+        </ol>
+        <p>A structured <strong>Progressive Overload</strong> strategy is essential for continuous gains. The following 8-week cycle provides a clear path for advancement <sup>6</sup>:</p>
+        <ul>
+          <li><strong>Weeks 1-2:</strong> Foundation Phase. Focus on perfecting exercise form with moderate weight. Perform 3 sets of 10-12 repetitions.</li>
+          <li><strong>Weeks 3-4:</strong> Volume Phase. Increase the weight slightly and add a fourth set to key compound movements.</li>
+          <li><strong>Weeks 5-6:</strong> Intensity Phase. Introduce intensity techniques like drop sets (reducing weight and continuing reps) or burnout sets (as many reps as possible on the final set) to increase muscle density.<sup>6</sup></li>
+          <li><strong>Weeks 7-8:</strong> Peak Phase. Incorporate advanced techniques like supersets (pairing two exercises back-to-back with no rest) to maximize workout density and stimulus.<sup>6</sup></li>
+        </ul>
+
+        <details open>
+          <summary><strong>Table 2: The 4-Day Upper/Lower Hypertrophy Split</strong></summary>
+          <div class="table-wrap" role="region" aria-label="Upper Lower Split" tabindex="0">
+            <table>
+              <thead><tr><th>Day 1: Upper Body 1 (Push Focus)</th><th>Sets</th><th>Reps</th><th>Rest</th></tr></thead>
+              <tbody>
+                <tr><td>Barbell Bench Press</td><td>4</td><td>8-10</td><td>90s</td></tr>
+                <tr><td>Incline Dumbbell Press</td><td>3</td><td>10-12</td><td>60s</td></tr>
+                <tr><td>Seated Dumbbell Shoulder Press</td><td>3</td><td>10-12</td><td>60s</td></tr>
+                <tr><td>Lateral Raises</td><td>3</td><td>12-15</td><td>45s</td></tr>
+                <tr><td>Triceps Pushdowns</td><td>3</td><td>10-12</td><td>45s</td></tr>
+                <tr><td>Dumbbell Skullcrushers</td><td>3</td><td>10-12</td><td>45s</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap" role="region" aria-label="Lower Quad Focus" tabindex="0">
+            <table>
+              <thead><tr><th>Day 2: Lower Body 1 (Quad Focus)</th><th>Sets</th><th>Reps</th><th>Rest</th></tr></thead>
+              <tbody>
+                <tr><td>Barbell Back Squats</td><td>4</td><td>8-10</td><td>90-120s</td></tr>
+                <tr><td>Leg Press</td><td>3</td><td>10-15</td><td>90s</td></tr>
+                <tr><td>Walking Lunges</td><td>3</td><td>10-12/leg</td><td>60s</td></tr>
+                <tr><td>Leg Extensions</td><td>3</td><td>12-15</td><td>45s</td></tr>
+                <tr><td>Standing Calf Raises</td><td>4</td><td>15-20</td><td>30s</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap" role="region" aria-label="Upper Pull Focus" tabindex="0">
+            <table>
+              <thead><tr><th>Day 4: Upper Body 2 (Pull Focus)</th><th>Sets</th><th>Reps</th><th>Rest</th></tr></thead>
+              <tbody>
+                <tr><td>Pull-Ups (or Lat Pulldowns)</td><td>4</td><td>8-12</td><td>90s</td></tr>
+                <tr><td>Barbell Rows</td><td>3</td><td>8-10</td><td>90s</td></tr>
+                <tr><td>Seated Cable Rows</td><td>3</td><td>10-12</td><td>60s</td></tr>
+                <tr><td>Face Pulls</td><td>3</td><td>15-20</td><td>45s</td></tr>
+                <tr><td>Barbell Curls</td><td>3</td><td>10-12</td><td>45s</td></tr>
+                <tr><td>Hammer Curls</td><td>3</td><td>10-12</td><td>45s</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap" role="region" aria-label="Lower Ham Glute" tabindex="0">
+            <table>
+              <thead><tr><th>Day 6: Lower Body 2 (Hamstring/Glute Focus)</th><th>Sets</th><th>Reps</th><th>Rest</th></tr></thead>
+              <tbody>
+                <tr><td>Romanian Deadlifts</td><td>4</td><td>8-10</td><td>90-120s</td></tr>
+                <tr><td>Bulgarian Split Squats</td><td>3</td><td>10-12/leg</td><td>60s</td></tr>
+                <tr><td>Lying Leg Curls</td><td>3</td><td>12-15</td><td>45s</td></tr>
+                <tr><td>Glute Bridges/Hip Thrusts</td><td>3</td><td>10-15</td><td>60s</td></tr>
+                <tr><td>Seated Calf Raises</td><td>4</td><td>15-20</td><td>30s</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <h3 id="s3-hiit">Part 3.2: The Morning Activation Protocol: HIIT <a class="anchor" href="#s3-hiit">#</a></h3>
+        <p>For the morning cardio session, a 15-minute High-Intensity Interval Training (HIIT) session performed on the balcony is recommended over running. The rationale is based on superior efficiency and physiological benefits:</p>
+        <ul>
+          <li><strong>Time Efficiency:</strong> HIIT is a more time-efficient training modality. A 15-20 minute session can elicit similar or even greater improvements in cardiorespiratory fitness (VO<sub>2</sub>max) than a 30-45 minute moderate-intensity run.<sup>8</sup> This saves critical time in a packed morning schedule.</li>
+          <li><strong>Metabolic Boost:</strong> HIIT is renowned for its "afterburn effect," known as Excess Post-exercise Oxygen Consumption (EPOC). Due to its high intensity, the body's metabolic rate remains elevated for hours after the workout, leading to greater overall calorie expenditure throughout the day.<sup>9</sup></li>
+          <li><strong>Logistical Simplicity:</strong> Performing HIIT on a balcony eliminates travel time and logistical barriers, significantly increasing the likelihood of long-term consistency.</li>
+          <li><strong>Health Benefits:</strong> Research shows HIIT is as effective or more effective than moderate-intensity continuous training (MICT) for improving cardiovascular health markers like blood pressure and HDL cholesterol, and may be more effective at reducing visceral abdominal fat.<sup>11</sup></li>
+        </ul>
+        <p>A sample 15-minute bodyweight HIIT routine is as follows:</p>
+        <ul>
+          <li><strong>Warm-up (3 mins):</strong> Light jogging in place, arm circles, leg swings.</li>
+          <li><strong>Workout (10 mins):</strong> Perform each exercise for 30 seconds of maximum effort, followed by 30 seconds of complete rest. Complete two full rounds.
+            <ol>
+              <li>Jumping Jacks</li>
+              <li>High Knees</li>
+              <li>Burpees</li>
+              <li>Mountain Climbers</li>
+              <li>Squat Jumps</li>
+            </ol>
+          </li>
+          <li><strong>Cool-down (2 mins):</strong> Light stretching.</li>
+        </ul>
+
+        <h3 id="s3-mobility">Part 3.3: The Mobility Mandate <a class="anchor" href="#s3-mobility">#</a></h3>
+        <p>Flexibility and mobility are not optional add-ons; they are essential for injury prevention, enhancing recovery, and counteracting the significant negative postural effects of prolonged sitting inherent in a student and coder's lifestyle.</p>
+        <ul>
+          <li><strong>Morning Mobilization (5-10 mins):</strong> This is a dynamic routine designed to increase blood flow, lubricate joints, and prepare the central nervous system for the day ahead.</li>
+          <li><strong>Pre-Sleep Decompression (10-15 mins):</strong> This is a static stretching routine designed to release accumulated muscular tension from the day, down-regulate the nervous system, and promote higher quality, more restorative sleep.<sup>12</sup></li>
+        </ul>
+        <details open>
+          <summary><strong>Table 3: The Daily Mobility Protocols</strong></summary>
+          <div class="table-wrap" role="region" aria-label="Mobility protocols" tabindex="0">
+            <table>
+              <thead>
+                <tr>
+                  <th>Morning Mobilization (Dynamic)</th><th>Reps/Duration</th><th>Pre-Sleep Decompression (Static)</th><th>Hold Duration</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Cat-Cow</td><td>10 reps</td><td>Child's Pose</td><td>60 seconds</td></tr>
+                <tr><td>Thoracic Spine Rotations (Quadruped)</td><td>8 reps/side</td><td>Knees-to-Chest</td><td>30 seconds</td></tr>
+                <tr><td>Leg Swings (Forward &amp; Sideways)</td><td>10 reps/side</td><td>Seated Forward Fold (Hamstrings)</td><td>30-45 seconds</td></tr>
+                <tr><td>Shoulder Rolls / Dislocations</td><td>10 reps/direction</td><td>Figure Four Stretch (Glutes/Hips)</td><td>30 seconds/side</td></tr>
+                <tr><td>Deep Squat Hold (rocking side to side)</td><td>30-45 seconds</td><td>Lying Spinal Twist</td><td>30 seconds/side</td></tr>
+                <tr><td>World's Greatest Stretch</td><td>5 reps/side</td><td>Kneeling Lat Stretch</td><td>30 seconds</td></tr>
+                <tr><td>Neck Stretches (Gentle)</td><td>5 reps/direction</td><td>Bear Hug (Upper Back)</td><td>30 seconds</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+
+      <!-- Section 4: Nutrition -->
+      <section class="panel" id="tab-s4" role="tabpanel" aria-labelledby="tabbtn-s4">
+        <h2 id="s4">Section 4: The Fueling Strategy: High-Performance Nutrition within Constraints <a class="anchor" href="#s4">#</a></h2>
+        <p>This nutritional strategy is designed to fuel elite cognitive and physical performance while operating within the constraints of a hostel mess system. The focus is on nutrient timing to maximize the efficacy of supplementation and meals.</p>
+
+        <h3 id="s4-supp">The Supplementation Protocol: Timing for Maximal Efficacy <a class="anchor" href="#s4-supp">#</a></h3>
+        <ul>
+          <li><strong>Creatine Monohydrate:</strong> A daily dose of 5 grams is recommended. On workout days, this should be consumed in the post-workout window. While research on pre- versus post-workout timing is mixed, the consensus is that consuming it <em>close</em> to the workout is superior to other times of the day for enhancing muscle mass and strength.<sup>14</sup> The slight edge appears to be for post-workout consumption, especially when co-ingested with carbohydrates and protein, as the resulting insulin spike can enhance creatine uptake by the muscles.<sup>16</sup> On rest days, timing is less critical, but taking the 5g dose with a meal (e.g., breakfast) helps maintain muscle creatine saturation.<sup>14</sup></li>
+          <li><strong>Protein Powder (Whey):</strong> The primary use for protein powder is in the immediate post-workout window. A scoop providing 20-25 grams of whey protein will rapidly elevate blood amino acid levels, kickstarting the muscle protein synthesis (MPS) process when muscles are most receptive.<sup>17</sup></li>
+          <li><strong>Milk:</strong> Milk is a highly effective and cost-efficient recovery beverage and should be consumed in two key windows.
+            <ol>
+              <li><strong>Post-Workout:</strong> Low-fat milk provides a powerful combination of fast-digesting whey protein and slow-digesting casein protein, along with carbohydrates (lactose) and electrolytes (sodium, potassium), making it an ideal fluid for rehydration and initiating muscle repair.<sup>19</sup></li>
+              <li><strong>Pre-Sleep:</strong> Consuming a glass of milk before bed is highly strategic. The slow-digesting casein protein provides a sustained release of amino acids throughout the night. This helps to maintain a positive protein balance, mitigating muscle protein breakdown during the overnight fast and supporting continuous muscle repair and growth while sleeping.<sup>22</sup></li>
+            </ol>
+          </li>
+        </ul>
+
+        <h3 id="s4-window">Nutrient Timing Synergy: The Two-Stage Recovery Window <a class="anchor" href="#s4-window">#</a></h3>
+        <p>The schedule creates a perfect, albeit tight, post-workout "anabolic window" that can be strategically exploited for maximum recovery. The gym session ends around 6:30 PM, and the mess dinner window begins at 7:30 PM. This allows for a highly effective two-stage recovery fueling process. Post-exercise, muscles are primed for nutrient uptake due to increased blood flow and heightened insulin sensitivity.<sup>14</sup> This state can be maximized with the following protocol:</p>
+        <ul>
+          <li><strong>Stage 1 (Immediate Post-Workout; ~6:45 PM):</strong> Consume a shaker cup containing one scoop of whey protein powder, 5g of creatine monohydrate, and mixed with low-fat milk (or water). This delivers a rapid infusion of amino acids, creatine, and carbohydrates precisely when the body is most receptive to them.</li>
+          <li><strong>Stage 2 (Mess Dinner; ~7:45 PM):</strong> Consume a full, balanced meal from the hostel mess. This provides the complex carbohydrates, additional protein, fats, and micronutrients necessary to sustain the recovery process initiated by the post-workout shake.</li>
+        </ul>
+
+        <h3 id="s4-integration">Integrating Hostel Meals and Additional Fuel <a class="anchor" href="#s4-integration">#</a></h3>
+        <ul>
+          <li><strong>Breakfast (7:30-8:00 AM):</strong> Consumed after the morning activation block. Focus on securing the most protein-dense options available in the mess.</li>
+          <li><strong>Lunch (1:00-2:00 PM):</strong> Standard meal from the mess.</li>
+          <li><strong>Nightly Boiled Chicken Meal (~11:00 PM):</strong> This meal, consumed after the NurtureBeast work block, serves as a final protein bolus to support overnight recovery before the pre-sleep milk.</li>
+        </ul>
+
+        <details open>
+          <summary><strong>Table 4: Sample Daily Nutrition &amp; Supplement Timeline (Workout Day)</strong></summary>
+          <div class="table-wrap" role="region" aria-label="Nutrition timeline" tabindex="0">
+            <table>
+              <thead><tr><th>Time</th><th>Action</th><th>Rationale</th></tr></thead>
+              <tbody>
+                <tr><td><strong>7:30 AM</strong></td><td>Mess Breakfast</td><td>Fuel for the morning cognitive blocks.</td></tr>
+                <tr><td><strong>1:00 PM</strong></td><td>Mess Lunch</td><td>Mid-day energy replenishment.</td></tr>
+                <tr><td><strong>~6:45 PM</strong></td><td><strong>Post-Workout Shake:</strong> 1 scoop Protein, 5g Creatine, Milk</td><td>Stage 1 Recovery: Rapid nutrient delivery to primed muscles.</td></tr>
+                <tr><td><strong>~7:45 PM</strong></td><td>Mess Dinner</td><td>Stage 2 Recovery: Sustained energy and nutrient supply.</td></tr>
+                <tr><td><strong>~11:00 PM</strong></td><td>Boiled Chicken Meal</td><td>Final protein bolus to support overnight anabolism.</td></tr>
+                <tr><td><strong>~11:30 PM</strong></td><td>Glass of Milk</td><td>Pre-sleep casein protein for slow-release amino acids overnight.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+
+      <!-- Section 5: Strategic Directives -->
+      <section class="panel" id="tab-s5" role="tabpanel" aria-labelledby="tabbtn-s5">
+        <h2 id="s5">Section 5: Strategic Directives: Mindset, Adaptability, and Sustainability <a class="anchor" href="#s5">#</a></h2>
+        <p>A perfect plan is useless without the mindset and systems to execute it consistently and adapt it over time. This final section provides the meta-skills required to sustain this high-intensity protocol for the long term.</p>
+
+        <h3 id="s5-sleep">Sleep as a Non-Negotiable Performance Multiplier <a class="anchor" href="#s5-sleep">#</a></h3>
+        <p>With a mandated 5:00 AM wake-up time, achieving 7-8 hours of quality sleep is not a luxury but a biological necessity. A consistent bedtime of 11:30 PM to 12:00 AM must be rigorously protected. Sleep is the foundation upon which all cognitive and physical gains are built. Chronic sleep deprivation will systematically undermine every other aspect of this protocol, leading to decreased focus, impaired decision-making, poor workout recovery, a weakened immune system, and eventual burnout.</p>
+
+        <h3 id="s5-weekend">The Weekend Protocol: Strategic De-loading and Preparation <a class="anchor" href="#s5-weekend">#</a></h3>
+        <p>Weekends are not for unstructured downtime but for <em>strategic recovery and preparation</em>.</p>
+        <ul>
+          <li><strong>Saturday:</strong> The schedule includes a workout and dedicated blocks for the AI Bard project, but also incorporates free time for social connection and hobbies. This is crucial for psychological well-being and preventing burnout.</li>
+          <li><strong>Sunday:</strong> This is a dedicated "De-load and Planning Day." It includes active recovery (a light walk and a full stretching session) and, most importantly, a <strong>Weekly Review</strong>.</li>
+        </ul>
+
+        <h3 id="s5-review">The Weekly Review Process <a class="anchor" href="#s5-review">#</a></h3>
+        <p>On Sunday morning, a 30-minute block is scheduled for a formal Weekly Review. This is the primary mechanism for adaptation and continuous improvement. During this time, reflect on the past week by asking three critical questions:</p>
+        <ol>
+          <li>What worked well?</li>
+          <li>What didn't work? Where were the points of friction?</li>
+          <li>What will I adjust for the upcoming week to improve the process?</li>
+        </ol>
+        <p>This simple, iterative process of reflection and adjustment is what makes the plan resilient and ensures it evolves with changing demands and priorities.</p>
+
+        <h3 id="s5-imbalance">The Principle of "Intentional Imbalance" <a class="anchor" href="#s5-imbalance">#</a></h3>
+        <p>It must be acknowledged that this schedule represents a period of intense, focused effort. It is not a "balanced" lifestyle in the traditional sense; it is a temporary, <em>strategic imbalance</em> consciously chosen to achieve extraordinary goals in a compressed timeframe. Adopting this mindset helps to manage expectations and reinforces the critical importance of the scheduled recovery, social time, and sleep to maintain psychological and physiological equilibrium.</p>
+      </section>
+
+      <!-- Conclusion -->
+      <section class="panel" id="tab-conclusion" role="tabpanel" aria-labelledby="tabbtn-conclusion">
+        <h2 id="conclusion">Conclusion: From Blueprint to Reality <a class="anchor" href="#conclusion">#</a></h2>
+        <p>This Lock-In Protocol provides a scientifically-grounded and highly integrated blueprint for achieving exceptional performance. It synthesizes a high-level master schedule with granular tactics for productivity, a precise physical training and mobility plan, and a nutrient-timing strategy optimized for the user's specific constraints and goals. The framework is designed to create synergy, where each component actively supports the others to produce a result greater than the sum of its parts.</p>
+        <p>The plan is the architecture. However, its translation from blueprint to reality depends entirely on consistent and disciplined execution. The act of "locking in" is a choice made every hour of every day. This protocol provides the structure and clarity to make that choice effective, empowering the user to systematically build momentum and achieve the ambitious outcomes he seeks.</p>
+      </section>
+
+      <!-- Works Cited -->
+      <section class="panel" id="tab-works" role="tabpanel" aria-labelledby="tabbtn-works">
+        <h2 id="works">Works cited <a class="anchor" href="#works">#</a></h2>
+        <ol>
+          <li>downloadRegistrationCard.pdf</li>
+          <li>Pomodoro Technique vs. Time Blocking: Which is Better? - Sajoo Life, accessed August 14, 2025, <a href="https://sajoolife.com/pomodoro-technique/" target="_blank" rel="noopener noreferrer">https://sajoolife.com/pomodoro-technique/</a></li>
+          <li>Pomodoro Timer vs. Traditional Time Blocking: Which One Works Best for You? | LifeAt, accessed August 14, 2025, <a href="https://lifeat.io/blog/pomodoro-timer-vs-traditional-time-blocking-which-one-works-best-for-you" target="_blank" rel="noopener noreferrer">https://lifeat.io/blog/pomodoro-timer-vs-traditional-time-blocking-which-one-works-best-for-you</a></li>
+          <li>The Ultimate 4-Day Workout Split | 1st Phorm, accessed August 14, 2025, <a href="https://1stphorm.com/blogs/news/4-day-workout-split" target="_blank" rel="noopener noreferrer">https://1stphorm.com/blogs/news/4-day-workout-split</a></li>
+          <li>Best 4 Day Full Body Workout Split For Mass (COMPLETE GUIDE) - Fitbod, accessed August 14, 2025, <a href="https://fitbod.me/blog/4-day-full-body-workout-split/" target="_blank" rel="noopener noreferrer">https://fitbod.me/blog/4-day-full-body-workout-split/</a></li>
+          <li>4-Day Workout Splits to Build Muscle &amp; Strength | EōS Fitness, accessed August 14, 2025, <a href="https://www.eosfitness.com/blog/winter-4-day-splits" target="_blank" rel="noopener noreferrer">https://www.eosfitness.com/blog/winter-4-day-splits</a></li>
+          <li>How to Build Muscle: The 4 Day Split Program - BOXROX, accessed August 14, 2025, <a href="https://www.boxrox.com/how-to-build-muscle-the-4-day-split-program/" target="_blank" rel="noopener noreferrer">https://www.boxrox.com/how-to-build-muscle-the-4-day-split-program/</a></li>
+          <li>Functional Vs. Running Low-Volume High-Intensity Interval Training: Effects on VO2max and Muscular Endurance - PMC - PubMed Central, accessed August 14, 2025, <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6683610/" target="_blank" rel="noopener noreferrer">https://pmc.ncbi.nlm.nih.gov/articles/PMC6683610/</a></li>
+          <li>HIIT Benefits: 7 Reasons to Try High Intensity Interval Training - Healthline, accessed August 14, 2025, <a href="https://www.healthline.com/nutrition/benefits-of-hiit" target="_blank" rel="noopener noreferrer">https://www.healthline.com/nutrition/benefits-of-hiit</a></li>
+          <li>Is running a HIIT exercise?: Debate - Crunch Fitness, accessed August 14, 2025, <a href="https://www.crunch.com/thehub/is-running-a-hiit-exercise-debate/" target="_blank" rel="noopener noreferrer">https://www.crunch.com/thehub/is-running-a-hiit-exercise-debate/</a></li>
+          <li>HIIT (High Intensity Interval Training) • The Nutrition Source, accessed August 14, 2025, <a href="https://nutritionsource.hsph.harvard.edu/high-intensity-interval-training/" target="_blank" rel="noopener noreferrer">https://nutritionsource.hsph.harvard.edu/high-intensity-interval-training/</a></li>
+          <li>8 Stretches to Do Before Bed - Healthline, accessed August 14, 2025, <a href="https://www.healthline.com/health/stretching-before-bed" target="_blank" rel="noopener noreferrer">https://www.healthline.com/health/stretching-before-bed</a></li>
+          <li>7 bedtime stretches to help you relax and sleep better — Calm Blog, accessed August 14, 2025, <a href="https://www.calm.com/blog/bedtime-stretches" target="_blank" rel="noopener noreferrer">https://www.calm.com/blog/bedtime-stretches</a></li>
+          <li>When Is the Best Time to Take Creatine? - Healthline, accessed August 14, 2025, <a href="https://www.healthline.com/nutrition/best-time-for-creatine" target="_blank" rel="noopener noreferrer">https://www.healthline.com/nutrition/best-time-for-creatine</a></li>
+          <li>When Is the Best Time to Take Creatine? - Verywell Health, accessed August 14, 2025, <a href="https://www.verywellhealth.com/best-time-to-take-creatine-8753487" target="_blank" rel="noopener noreferrer">https://www.verywellhealth.com/best-time-to-take-creatine-8753487</a></li>
+          <li>When is the best time to take creatine for muscle growth? - Medical News Today, accessed August 14, 2025, <a href="https://www.medicalnewstoday.com/articles/when-to-take-creatine" target="_blank" rel="noopener noreferrer">https://www.medicalnewstoday.com/articles/when-to-take-creatine</a></li>
+          <li>Timing, optimal dose and intake duration of dietary supplements with evidence-based use in sports nutrition - PubMed Central, accessed August 14, 2025, <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5545206/" target="_blank" rel="noopener noreferrer">https://pmc.ncbi.nlm.nih.gov/articles/PMC5545206/</a></li>
+          <li>Creatine O'Clock: Does Timing of Ingestion Really Influence Muscle Mass and Performance? - Frontiers, accessed August 14, 2025, <a href="https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2022.893714/full" target="_blank" rel="noopener noreferrer">https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2022.893714/full</a></li>
+          <li>Milk: the new sports drink? A Review - PMC - PubMed Central, accessed August 14, 2025, <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2569005/" target="_blank" rel="noopener noreferrer">https://pmc.ncbi.nlm.nih.gov/articles/PMC2569005/</a></li>
+          <li>How Dairy Milk Can Help You Recover And Replenish After A Workout | GonnaNeedMilk, accessed August 14, 2025, <a href="https://gonnaneedmilk.com/articles/how-dairy-milk-can-help-you-recover-and-replenish-after-a-workout/" target="_blank" rel="noopener noreferrer">https://gonnaneedmilk.com/articles/how-dairy-milk-can-help-you-recover-and-replenish-after-a-workout/</a></li>
+          <li>Cow's milk as a post-exercise recovery drink: implications for performance and health, accessed August 14, 2025, <a href="https://pubmed.ncbi.nlm.nih.gov/30379113/" target="_blank" rel="noopener noreferrer">https://pubmed.ncbi.nlm.nih.gov/30379113/</a></li>
+          <li>What Happens To Your Muscles When You Drink Milk Every Day ..., accessed August 14, 2025, <a href="https://cowsmo.com/news/what-happens-to-your-muscles-when-you-drink-milk-every-day/" target="_blank" rel="noopener noreferrer">https://cowsmo.com/news/what-happens-to-your-muscles-when-you-drink-milk-every-day/</a></li>
+        </ol>
+      </section>
+    </main>
+
+    <footer role="contentinfo">
+      <div class="wrap">
+        <span>© 2025 The Lock-In Protocol. Single-file app. </span>
+        <span class="muted">Keyboard: Tab switch (Alt+←/→), Search (/), Clear (Esc).</span>
+      </div>
+    </footer>
+
+    <div class="fab" aria-label="Quick actions">
+      <button id="toTop" title="Back to top" aria-label="Back to top">↑</button>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const root = document.documentElement;
+      const tabButtons = Array.from(document.querySelectorAll('[role="tab"]'));
+      const panels = Array.from(document.querySelectorAll('.panel'));
+      const search = document.getElementById('search');
+      const clearBtn = document.getElementById('clearSearch');
+      const themeToggle = document.getElementById('themeToggle');
+      const expandAll = document.getElementById('expandAll');
+      const collapseAll = document.getElementById('collapseAll');
+      const printBtn = document.getElementById('printBtn');
+      const toTop = document.getElementById('toTop');
+      const tabSelect = document.getElementById('tabSelect');
+
+      // Restore theme & last tab
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) root.setAttribute('data-theme', savedTheme);
+      function setTheme(mode){ root.setAttribute('data-theme', mode); localStorage.setItem('theme', mode) }
+      themeToggle.addEventListener('click', () => {
+        setTheme(root.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+      });
+
+      function activateTab(id, focusBtn=false) {
+        tabButtons.forEach(btn => {
+          const active = btn.id === 'tabbtn-' + id;
+          btn.setAttribute('aria-selected', String(active));
+          if (focusBtn && active) btn.focus({preventScroll:true});
+        });
+        panels.forEach(p => p.classList.toggle('active', p.id === 'tab-' + id));
+        localStorage.setItem('activeTab', id);
+        history.replaceState(null, '', '#' + id);
+        // Clear search when switching tabs (non-destructive to value)
+        clearHighlights();
+      }
+
+      const fromHash = location.hash.replace('#','');
+      const savedTab = localStorage.getItem('activeTab');
+      const initial = fromHash || savedTab || 'intro';
+      if (initial && document.getElementById('tab-' + initial)) activateTab(initial);
+
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => activateTab(btn.id.replace('tabbtn-',''), true));
+      });
+
+      // Keyboard nav for tabs: Alt+ArrowLeft/Right
+      window.addEventListener('keydown', (e) => {
+        if (e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+          e.preventDefault();
+          const idx = tabButtons.findIndex(b => b.getAttribute('aria-selected') === 'true');
+          const next = (idx + (e.key === 'ArrowRight' ? 1 : -1) + tabButtons.length) % tabButtons.length;
+          tabButtons[next].click();
+        }
+        if (e.key === '/' && document.activeElement !== search) {
+          e.preventDefault(); search.focus();
+        }
+        if (e.key === 'Escape') { clearBtn.click(); }
+      });
+
+      // Mobile-friendly tab picker
+      tabSelect.addEventListener('click', () => {
+        const labels = tabButtons.map(b => b.textContent);
+        const current = tabButtons.findIndex(b => b.getAttribute('aria-selected')==='true');
+        const choice = prompt('Go to section:\n' + labels.map((t,i)=> (i===current?'• ':'  ') + (i+1) + '. ' + t).join('\n'));
+        const n = parseInt(choice, 10);
+        if (!isNaN(n) && n>=1 && n<=tabButtons.length) tabButtons[n-1].click();
+      });
+
+      // Expand/Collapse all details within current tab
+      function toggleDetails(open) {
+        const panel = document.querySelector('.panel.active');
+        if (!panel) return;
+        panel.querySelectorAll('details').forEach(d => d.open = open);
+      }
+      expandAll.addEventListener('click', () => toggleDetails(true));
+      collapseAll.addEventListener('click', () => toggleDetails(false));
+
+      // Print
+      printBtn.addEventListener('click', () => window.print());
+
+      // Back to top
+      toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+      // Headings link copy on click of anchor
+      document.querySelectorAll('.anchor').forEach(a => {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          const id = a.getAttribute('href');
+          history.replaceState(null, '', id);
+          navigator.clipboard?.writeText(location.href);
+          a.textContent = '✓'; setTimeout(()=> a.textContent = '#', 800);
+        });
+      });
+
+  // Search & highlight within active panel
+  let lastQuery = '';
+  function escapeRegExp(str){ return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') }
+      function clearHighlights() {
+        const panel = document.querySelector('.panel.active');
+        if (!panel) return;
+        panel.querySelectorAll('mark').forEach(m => {
+          const parent = m.parentNode; parent.replaceChild(document.createTextNode(m.textContent), m); parent.normalize();
+        });
+      }
+      function doSearch(q) {
+        const panel = document.querySelector('.panel.active');
+        if (!panel) return;
+        clearHighlights();
+        if (!q) return;
+        const walker = document.createTreeWalker(panel, NodeFilter.SHOW_TEXT, {
+          acceptNode(node){
+            if(!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+            if(node.parentElement && ['SCRIPT','STYLE'].includes(node.parentElement.tagName)) return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+          }
+        });
+        const regex = new RegExp(escapeRegExp(q), 'gi');
+        const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach(node => {
+          const frag = document.createDocumentFragment();
+          let text = node.nodeValue; let lastIndex = 0; let match;
+          while ((match = regex.exec(text)) !== null) {
+            frag.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+            const mark = document.createElement('mark'); mark.textContent = match[0]; frag.appendChild(mark);
+            lastIndex = regex.lastIndex;
+          }
+          frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+          node.parentNode.replaceChild(frag, node);
+        });
+        const first = panel.querySelector('mark'); if (first) first.scrollIntoView({behavior:'smooth', block:'center'});
+      }
+      search.addEventListener('input', (e)=> doSearch(e.target.value.trim()));
+      clearBtn.addEventListener('click', ()=> { search.value=''; clearHighlights(); search.focus() });
+
+      // Improve focus ring for keyboard users only
+      function handleFirstTab(e){ if(e.key==='Tab'){ document.body.classList.add('user-is-tabbing'); window.removeEventListener('keydown', handleFirstTab) } }
+      window.addEventListener('keydown', handleFirstTab);
+
+    })();
+  </script>
+</body>
+</html>
